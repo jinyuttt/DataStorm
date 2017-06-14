@@ -1,0 +1,21 @@
+INDEX VERSION 1.130+E:\Study\java\DataStorm\.metadata\.plugins\org.eclipse.jdt.core
+435126330.index
+1225022635.index
+714836089.index
+1659229085.index
+605027076.index
+946390961.index
+3469511468.index
+3610505286.index
+1915837417.index
+1518201217.index
+143638421.index
+2689055543.index
+1700085996.index
+4217615951.index
+3178912059.index
+755692841.index
+488542560.index
+2257846857.index
+2620710353.index
+3559755016.index

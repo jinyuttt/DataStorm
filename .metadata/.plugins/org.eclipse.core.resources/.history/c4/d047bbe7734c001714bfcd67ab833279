@@ -1,0 +1,12 @@
+/**
+ * 
+ */
+package EventBus;
+
+/**
+ * @author jinyu
+ *
+ */
+public class MessageBus {
+
+}

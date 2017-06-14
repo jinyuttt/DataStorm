@@ -1,0 +1,70 @@
+package DataBus;
+
+import java.util.concurrent.ExecutionException;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+
+import DBAcess.BerkeleyDB;
+import DataJsonSerializer.JsonSerializer;
+
+public class CacheData<K,V> {
+    public static boolean isLoadDB=false;
+    Cache<K, V> cache=null;
+    BerkeleyDB db=null;
+  public  CacheData(long size,int time)
+  {
+      if(isLoadDB)
+      {
+      db=new BerkeleyDB();
+      db.setDir("cacheData");
+      db.open();
+      db.setConfig();
+      }
+      Cache<K, V> cache = (Cache<K, V>) CacheBuilder.newBuilder()
+                    .maximumSize(size)
+                    .initialCapacity(4)
+                    .build(
+                            new CacheLoader<K, V>() {
+                         
+                                                public V load(K key) { // no checked exception
+                                                  if(isLoadDB)
+                                                  {
+                                                      return getDBKey( key);
+                                                  }
+                                                  else
+                                                  {
+                                                      return null;
+                                                  }
+                 
+                                                }});
+
+  }
+  
+  /**
+   * ╪сть
+   */
+  public V getDBKey(K key)
+  {
+    byte[]  keyEntry= JsonSerializer.serializerObject(key);
+    byte[] valueEntry  = db.get(keyEntry);
+   @SuppressWarnings("unchecked")
+    V v=(V) JsonSerializer.reserializerObject(valueEntry);
+    return v;
+      
+  }
+ public void put(K key, V v)
+ {
+     cache.put(key, v);
+ }
+ public V getByKey(K key)
+ {
+     try {
+        return cache.get(key, null);
+    } catch (ExecutionException e) {
+        e.printStackTrace();
+      return null;
+    }
+ }
+}

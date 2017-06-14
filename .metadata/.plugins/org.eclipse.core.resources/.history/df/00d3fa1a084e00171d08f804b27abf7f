@@ -1,0 +1,41 @@
+/**    
+ * 文件名：ProcessRegister.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年6月10日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package StromRegister;
+
+import java.util.concurrent.ConcurrentHashMap;
+
+import IServer.IProcessServer;
+import ListernerServer.CurrentServer;
+
+/**    
+ *     
+ * 项目名称：DataStromServer    
+ * 类名称：ProcessRegister    
+ * 类描述：    
+ * 创建人：jinyu    
+ * 创建时间：2017年6月10日 下午5:12:35    
+ * 修改人：jinyu    
+ * 修改时间：2017年6月10日 下午5:12:35    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class ProcessRegister {
+  
+public  static void addServer(String name,IProcessServer process)
+{
+    CurrentServer.addServer(name, process);
+}
+public static void removeServer(String name)
+{
+    CurrentServer.removeServer(name);
+}
+
+}

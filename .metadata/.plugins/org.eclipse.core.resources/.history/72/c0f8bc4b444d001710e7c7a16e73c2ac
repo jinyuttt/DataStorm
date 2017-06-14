@@ -1,0 +1,217 @@
+/**    
+ * 文件名：FactoryPackaget.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年6月10日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package Util;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+
+/**    
+ *     
+ * 项目名称：DataStromUtil    
+ * 类名称：FactoryPackaget    
+ * 类描述：    
+ * 创建人：jinyu    
+ * 创建时间：2017年6月10日 上午2:03:23    
+ * 修改人：jinyu    
+ * 修改时间：2017年6月10日 上午2:03:23    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class FactoryPackaget {
+   private ReqPackaget createReqPackaget(ByteBuffer buf)
+   {
+       ReqPackaget packaget=new ReqPackaget();
+       packaget.packagetType=2;
+       packaget.packagetID=buf.getInt();
+       packaget.reqType=buf.get();
+       short len=buf.getShort();
+        byte[] name=new byte[len];
+        buf.get(name);
+        packaget.serverName=new String(name);
+       byte[]args=new byte[buf.limit()-buf.position()];
+       buf.get(args);
+       packaget.args=args;
+       return packaget;
+   }
+   private RspPackaget createRspPackaget(ByteBuffer buf)
+   {
+       RspPackaget packaget=new RspPackaget();
+       packaget.packagetType=3;
+       packaget.packagetID=buf.getInt();
+       short len=buf.getShort();
+        byte[] name=new byte[len];
+        buf.get(name);
+        packaget.serverName=new String(name);
+        byte[]data=new byte[buf.limit()-buf.position()];
+        buf.get(data);
+        packaget.result=data;
+       return packaget;
+   }
+//   private ReqPackaget createReqPackaget(ByteBuffer buf)
+//   {
+//       ReqPackaget packaget=new ReqPackaget();
+//       packaget.packagetType=2;
+//       packaget.packagetID=buf.getInt();
+//       packaget.reqType=buf.get();
+//       short len=buf.getShort();
+//        byte[] name=new byte[len];
+//        buf.get(name);
+//        packaget.serverName=new String(name);
+//       byte[]args=new byte[buf.limit()-buf.position()];
+//       buf.get(args);
+//       packaget.args=args;
+//       return packaget;
+//   }
+   private ServerInfo createServerInfo(ByteBuffer buf)
+   {
+       ServerInfo packaget=new ServerInfo();
+       packaget.packagetType=0;
+       //
+       short len=buf.getShort();
+        byte[] name=new byte[len];
+        buf.get(name);
+        packaget.name=new String(name);
+        //
+        short ipLen=buf.getShort();
+       byte[]srcIP=new byte[ipLen];
+       buf.get(srcIP);
+       packaget.IP=new String(srcIP);
+       //
+       packaget.port=buf.getInt();
+       packaget.master_slave=buf.get()==0?false:true;
+       packaget.isMaster=buf.get()==0?false:true;
+       return packaget;
+   }
+   private ServerState createServerState(ByteBuffer buf)
+   {
+       ServerState packaget=new ServerState();
+       packaget.packagetType=1;
+       //
+       short len=buf.getShort();
+        byte[] name=new byte[len];
+        buf.get(name);
+        packaget.serverName=new String(name);
+        //
+        short ipLen=buf.getShort();
+       byte[]srcIP=new byte[ipLen];
+       buf.get(srcIP);
+       packaget.srcIP=new String(srcIP);
+       //
+       packaget.srcPort=buf.getInt();
+       //
+       short fLen=buf.getShort();
+       byte[] flage=new byte[fLen];
+       packaget.flage=new String(flage);
+       //
+       packaget.state=buf.getInt();
+       return packaget;
+   }
+   //
+   public byte[] unDataModel(IDataPackaget packaget)
+   {
+       if(packaget==null)
+       {
+           return null;
+       }
+       byte[] data=null;
+       if(packaget instanceof ReqPackaget)
+       {
+           ReqPackaget tmp=(ReqPackaget)packaget;
+           int len=1024;
+           if(tmp.args!=null)
+           {
+               len+=tmp.args.length;
+           }
+           byte[] all=new byte[len];
+           ByteBuffer buf=ByteBuffer.wrap(all);
+           buf.put(packaget.packagetType);
+           buf.putInt(tmp.packagetID);
+           buf.put(tmp.reqType);
+           byte[] name = null;
+        try {
+            name = tmp.serverName.getBytes("utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+           buf.putShort((short)name.length);
+           buf.put(name);
+           buf.put(tmp.args);
+           data=buf.array();
+       }
+       else if(packaget instanceof RspPackaget)
+       {
+           RspPackaget tmp=(RspPackaget)packaget;
+           int len=1024;
+           if(tmp.result!=null)
+           {
+               len+=tmp.result.length;
+           }
+           byte[] all=new byte[len];
+           ByteBuffer buf=ByteBuffer.wrap(all);
+           buf.put(packaget.packagetType);
+           buf.putInt(tmp.packagetID);
+      
+           byte[] name = null;
+        try {
+            name = tmp.serverName.getBytes("utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+           buf.putShort((short)name.length);
+           buf.put(name);
+           buf.put(tmp.result);
+           data=buf.array();
+       }
+       else if(packaget instanceof ServerInfo)
+       {
+           ServerInfo tmp=(ServerInfo)packaget;
+           int len=1024;
+           byte[] all=new byte[len];
+           ByteBuffer buf=ByteBuffer.wrap(all);
+           byte[] name = null;
+        try {
+              name = tmp.name.getBytes("utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+           buf.putShort((short)name.length);
+           buf.put(name);
+           //
+           byte[] ip = null;
+           try {
+                 ip = tmp.IP.getBytes("utf-8");
+           } catch (UnsupportedEncodingException e) {
+               e.printStackTrace();
+           }
+              buf.putShort((short)ip.length);
+              buf.put(ip);
+              //
+              buf.putInt(tmp.port);
+              byte tmpbyte=0;
+              tmpbyte=(byte) (tmp.master_slave==true?1:0);
+              buf.put(tmpbyte);
+              tmpbyte=(byte) (tmp.isMaster==true?1:0);
+              buf.put(tmpbyte);
+               data=buf.array();
+       }
+   }
+public IDataPackaget unPackaget(byte[]data)
+{
+    ByteBuffer buf=ByteBuffer.wrap(data);
+     byte  type=buf.get();
+     switch(type)
+     {
+           
+     }
+    return null;
+    
+}
+}

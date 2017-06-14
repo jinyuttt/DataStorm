@@ -1,0 +1,33 @@
+/**    
+ * 文件名：judpServer.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年6月11日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package NetProtocol;
+
+/**    
+ *     
+ * 项目名称：NetProtocol    
+ * 类名称：judpServer    
+ * 类描述：    
+ * 创建人：jinyu    
+ * 创建时间：2017年6月11日 下午7:23:58    
+ * 修改人：jinyu    
+ * 修改时间：2017年6月11日 下午7:23:58    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class judpServer {
+    /*
+     * 初始化监听
+     */
+    public boolean InitServer(String host,int port)
+    {
+    }
+    }
+}

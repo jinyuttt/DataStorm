@@ -1,0 +1,102 @@
+/**    
+ * 文件名：ListenerServer.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年6月10日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package ListernerServer;
+
+import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import com.google.common.eventbus.AllowConcurrentEvents;
+
+import ComModel.YWModel;
+import IServer.IProcessServer;
+import RecviceData.Session;
+import Util.DataPackaget;
+
+/**    
+ *     
+ * 项目名称：DataStromServer    
+ * 类名称：ListenerServer    
+ * 类描述：    
+ * 创建人：jinyu    
+ * 创建时间：2017年6月10日 下午1:33:12    
+ * 修改人：jinyu    
+ * 修改时间：2017年6月10日 下午1:33:12    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class ListenerRequest{
+    ConcurrentHashMap<String,Session> hashOffer=new ConcurrentHashMap<String,Session>(); 
+    private Lock lock = new ReentrantLock();// 锁对象 
+    ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+    HashSet<String> set=new  HashSet<String> ();
+   @AllowConcurrentEvents
+public void receviceData(YWModel data)
+{
+    //处理业务
+       IProcessServer cur= CurrentServer.getProcess(data.data.serverName);
+       String  key=data.srcIP+data.srcPort;
+       Session session= hashOffer.getOrDefault(key, null);
+       if(session==null)
+       {
+           lock.lock();
+           if(session==null)
+           {
+           session=new Session();
+           session.srcIP=data.srcIP;
+           session.srcPort=data.srcPort;
+           session.id=data.data.sessionid;
+           session.netType=data.netType;
+           session.socket=data.socket;
+           session.flage=data.data.serverName;
+           hashOffer.put(key, session);
+           
+           lock.unlock();
+       }
+      session.addData(data.data);
+      //
+      if(cur!=null)
+      {
+        DataCache cache=new DataCache();
+        cache.curProcess=cur;
+        cache.session=session;
+      
+        String id=key+session.id;
+        cache.key=id;
+        if(set.add(id))
+        {
+            cachedThreadPool.execute(new Runnable(){
+
+                @Override
+                public void run() {
+                 byte[]  realData=cache.session.read();
+             
+                 //一次数据取完
+                 set.remove(cache.key);
+               //删除这次数据通信
+                 String  key=data.srcIP+data.srcPort;
+                 hashOffer.remove(key);
+                 DataPackaget packaget=new DataPackaget();
+                 packaget.data=realData;
+                 packaget.reqCall=cache.session.reqCall;
+                 packaget.serverName
+                 cache.curProcess.recRequest(packaget);
+                }
+                  
+              });
+              }
+        }
+      }
+    
+}

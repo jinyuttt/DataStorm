@@ -1,0 +1,19 @@
+/**
+ * 
+ */
+package DataStrom;
+
+import com.google.common.collect.HashMultimap;
+
+/**
+ * @author jinyu
+ *
+ */
+public class ServerBus {
+	/*
+	 * 保存服务信息
+	 */
+public static  HashMultimap<String, ServerModel> map = HashMultimap.create();
+
+
+}

@@ -1,0 +1,32 @@
+/**    
+ * 文件名：CenterTimer.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年6月15日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package RecServer;
+
+/**    
+ *     
+ * 项目名称：DataStrom    
+ * 类名称：CenterTimer    
+ * 类描述：  定时检查
+ * 1 发布新添加的服务
+ * 2 交互服务信息
+ * 3 检查各注册中心状态
+ * 4 及时确认注册中心是否停止
+ * 5 选举通知主注册中心  
+ * 创建人：jinyu    
+ * 创建时间：2017年6月15日 上午1:53:48    
+ * 修改人：jinyu    
+ * 修改时间：2017年6月15日 上午1:53:48    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class CenterTimer {
+
+}

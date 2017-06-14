@@ -1,0 +1,31 @@
+/**    
+ * 文件名：DBCacheModel.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年6月10日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package CacheData;
+
+/**    
+ *     
+ * 项目名称：DataStromServer    
+ * 类名称：DBCacheModel    
+ * 类描述：    持久化缓存
+ * 创建人：jinyu    
+ * 创建时间：2017年6月10日 下午3:58:31    
+ * 修改人：jinyu    
+ * 修改时间：2017年6月10日 下午3:58:31    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class DBCacheModel {
+public  String remoteHost;
+public  int remotePort;
+public  String localHost;
+public int localPort;
+public byte[]data;
+}

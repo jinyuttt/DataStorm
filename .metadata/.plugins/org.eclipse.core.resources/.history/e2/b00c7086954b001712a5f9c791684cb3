@@ -1,0 +1,16 @@
+/**
+ * 
+ */
+package DataStrom;
+
+/**
+ * @author jinyu
+ *
+ */
+public class ServerModel {
+public String IP;
+public int port;
+public String name;
+public bool isMaster;
+
+}

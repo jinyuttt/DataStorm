@@ -1,0 +1,25 @@
+package DataBus;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+
+public class CacheData<K,V> {
+    Cache<K, V> cache=null;
+  public  CacheData(long size,int time)
+  {
+    Cache<K, V> cache = CacheBuilder.newBuilder()
+                    .maximumSize(size)
+                    .initialCapacity(4)
+                    .build(
+                            new CacheLoader<Key, Graph>() {
+                         
+                                                public Graph load(Key key) { // no checked exception
+                          
+                                                    return createExpensiveGraph(key);
+                 
+                                                }});
+
+  }
+
+}

@@ -1,0 +1,37 @@
+/**    
+ * 文件名：SubPackaget.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年6月11日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package NetPackaget;
+
+/**    
+ *     
+ * 项目名称：Common    
+ * 类名称：SubPackaget    
+ * 类描述：  网络数据分包传递
+ * 创建人：jinyu    
+ * 创建时间：2017年6月11日 下午4:17:18    
+ * 修改人：jinyu    
+ * 修改时间：2017年6月11日 下午4:17:18    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class SubPackaget {
+    public  final int   DSize=65535;//548,65535
+    public int  dstreamSize=65535;
+    public void setDStreamSize(int size)
+    {
+        
+    }
+    public  HashMap
+public byte[] subData(byte[]bytes)
+{
+    
+}
+}

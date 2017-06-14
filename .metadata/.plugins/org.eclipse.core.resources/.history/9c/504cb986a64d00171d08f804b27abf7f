@@ -1,0 +1,36 @@
+package DataBus;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+
+public class CacheData<K,V> {
+    public static boolean isLoadDB=false;
+    Cache<K, V> cache=null;
+  public  CacheData(long size,int time)
+  {
+    Cache<K, V> cache = (Cache<K, V>) CacheBuilder.newBuilder()
+                    .maximumSize(size)
+                    .initialCapacity(4)
+                    .build(
+                            new CacheLoader<K, V>() {
+                         
+                                                public V load(K key) { // no checked exception
+                                                  if(isLoadDB)
+                                                  {
+                                                      return null;
+                                                  }
+                                                  else
+                                                  {
+                                                      return null;
+                                                  }
+                 
+                                                }});
+
+  }
+  public V getDBKey(K key)
+  {
+      
+  }
+
+}

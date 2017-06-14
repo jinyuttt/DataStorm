@@ -1,0 +1,91 @@
+/**    
+ * 文件名：ServerTimer.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年6月14日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package ListernerServer;
+
+import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+
+import Config.CenterConfig;
+import FactoryPackaget.SubNetPackaget;
+import JNetSocket.MulticastClient;
+import RecviceData.AckCache;
+import Util.FactoryPackaget;
+import Util.ServerInfo;
+
+/**    
+ *     
+ * 项目名称：DataStromServer    
+ * 类名称：ServerTimer    
+ * 类描述：  定时上报服务状态给所有中心
+ * 当前通过组播发送（地址已经固化ConfigModel）  
+ * 创建人：jinyu    
+ * 创建时间：2017年6月14日 下午11:45:52    
+ * 修改人：jinyu    
+ * 修改时间：2017年6月14日 下午11:45:52    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class ServerTimer {
+    private static Thread  stateReset=null;//检查线程
+    private static ReentrantLock lock=new ReentrantLock();
+    protected static boolean isRuning;//控制线程启动
+    /*
+     * 启动线程发送ack
+     */
+    private static void startThread()
+    {
+     
+      
+            try
+            {
+            if(stateReset==null)
+            {
+                stateReset=new   Thread(new Runnable()
+                        {
+                           @Override
+                           public void run() {
+                               FactoryPackaget f=new FactoryPackaget();
+                               MulticastClient client=new MulticastClient();//组播通讯
+                              while(isRuning)
+                              {
+                               try {
+                                     for(Map.Entry<String,ServerInfo> entry:CenterConfig.localServer.entrySet())
+                                     {
+                                        byte[]data= f.unDataModel(entry.getValue());
+                                        client.sendData(CenterConfig.masterCenter.multIP, CenterConfig.masterCenter.port, data);
+                                     }
+                                       Thread.sleep(100);
+                          
+                    
+                               } catch (InterruptedException e) {
+                                   e.printStackTrace();
+                               }
+                               
+                              }
+                           }
+                    
+                        });
+                stateReset.setDaemon(true);
+                stateReset.setName("sendServerState");
+                stateReset.start();
+                    
+                }
+            }
+            finally
+            {
+                lock.unlock();
+            }
+        }
+   
+    }
+

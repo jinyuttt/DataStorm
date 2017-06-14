@@ -1,0 +1,53 @@
+/**    
+ * 文件名：SubPackaget.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年6月11日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package FactoryPackaget;
+
+import java.nio.ByteBuffer;
+
+/**    
+ *     
+ * 项目名称：NetProtocol    
+ * 类名称：SubPackaget    
+ * 类描述：    
+ * 创建人：jinyu    
+ * 创建时间：2017年6月11日 下午11:13:54    
+ * 修改人：jinyu    
+ * 修改时间：2017年6月11日 下午11:13:54    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class SubPackaget {
+public static byte[] createNetPackaget(long sessionid,long initseq,long packagetid, byte[] data)
+{
+    if(data==null)
+    {
+        return null;
+    }
+    byte[] bytes=new byte[16+data.length];
+    ByteBuffer buf=ByteBuffer.wrap(bytes);
+    buf.putLong(sessionid);
+    buf.putLong(initseq);
+    buf.putLong(packagetid);
+    buf.put(data);
+  return  buf.array();
+}
+public static ReturnCode  AnalysisNetPackaget(byte[]netdata)
+{
+    ReturnCode code=new ReturnCode();
+    ByteBuffer buf=ByteBuffer.wrap(netdata);
+    long sessionid=buf.getLong();
+    long initseq=buf.getLong();
+    long packagetid=buf.getLong();
+    
+    return null;
+    
+}
+}
