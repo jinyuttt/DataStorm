@@ -29,5 +29,5 @@ public class CenterConfig {
      * Ö÷×¢²áÖÐÐÄ
      */
  public  static  ConfigModel   localCenter=new ConfigModel();
- 
+ public  static  ConfigModel   masterCenter=new ConfigModel();
 }

@@ -61,5 +61,13 @@ public byte centerByte=0;
  */
 public boolean action=true;
 
+/**
+ * 注册中心标识
+ */
 public String flage;
+
+/**
+ * 数字标识（同falge)
+ */
+public int intflage=0;
 }

@@ -42,5 +42,11 @@ public void start()
     //
     StromCenterProcess center=new StromCenterProcess();
     MessageBus.register("stromState", center);
+    //
+    MasterProcess master=new MasterProcess();
+    MessageBus.register("master", master);
+    //
+    CenterServerProcess serverInfo=new CenterServerProcess();
+    MessageBus.register("stromserverinfo", serverInfo);
 }
 }

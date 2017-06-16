@@ -31,6 +31,8 @@ public abstract class IDataPackaget {
      * 3 返回包
      * 4 数据包
      * 5 服务信息包
+     * 6 注册中心包询问
+     * 7 注册中心服务交互
      */
 public  byte packagetType;
 /**

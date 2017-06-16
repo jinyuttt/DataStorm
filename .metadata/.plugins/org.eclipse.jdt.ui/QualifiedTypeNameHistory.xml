@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="java.util.LinkedList"/>
-<fullyQualifiedTypeName name="java.util.Random"/>
 <fullyQualifiedTypeName name="java.util.UUID"/>
 <fullyQualifiedTypeName name="java.util.Calendar"/>
 <fullyQualifiedTypeName name="java.util.concurrent.atomic.AtomicLong"/>
@@ -28,14 +26,12 @@
 <fullyQualifiedTypeName name="FactoryPackaget.NetDataPackaget"/>
 <fullyQualifiedTypeName name="NetProtocol.judpClient"/>
 <fullyQualifiedTypeName name="java.util.concurrent.SynchronousQueue"/>
-<fullyQualifiedTypeName name="java.util.concurrent.LinkedTransferQueue"/>
 <fullyQualifiedTypeName name="java.util.HashSet"/>
 <fullyQualifiedTypeName name="FactoryPackaget.AckQueue"/>
 <fullyQualifiedTypeName name="java.lang.ref.WeakReference"/>
 <fullyQualifiedTypeName name="DataBus.CacheData"/>
 <fullyQualifiedTypeName name="NetPackaget.PackagetRandom"/>
 <fullyQualifiedTypeName name="DataBus.CacheTimeListenter"/>
-<fullyQualifiedTypeName name="JNetSocket.UDPClient"/>
 <fullyQualifiedTypeName name="DBTimer.TimerCount"/>
 <fullyQualifiedTypeName name="java.nio.ByteBuffer"/>
 <fullyQualifiedTypeName name="java.util.concurrent.TimeUnit"/>
@@ -50,14 +46,18 @@
 <fullyQualifiedTypeName name="Util.FactoryPackaget"/>
 <fullyQualifiedTypeName name="JNetSocket.MulticastClient"/>
 <fullyQualifiedTypeName name="ListernerServer.ServerTimer"/>
-<fullyQualifiedTypeName name="Config.CenterConfig"/>
 <fullyQualifiedTypeName name="JNetSocket.UDPServerSocket"/>
 <fullyQualifiedTypeName name="JNetSocket.MulticastServerSocket"/>
 <fullyQualifiedTypeName name="DataProcess.BusRegister"/>
 <fullyQualifiedTypeName name="RecServer.CenterStart"/>
 <fullyQualifiedTypeName name="com.google.common.collect.Multiset"/>
-<fullyQualifiedTypeName name="Config.ConfigModel"/>
 <fullyQualifiedTypeName name="java.util.concurrent.LinkedBlockingQueue"/>
 <fullyQualifiedTypeName name="Util.ServerInfo"/>
 <fullyQualifiedTypeName name="Model.StromCenterModel"/>
+<fullyQualifiedTypeName name="java.util.concurrent.LinkedTransferQueue"/>
+<fullyQualifiedTypeName name="JNetSocket.UDPClient"/>
+<fullyQualifiedTypeName name="Model.MasterModel"/>
+<fullyQualifiedTypeName name="Config.CenterConfig"/>
+<fullyQualifiedTypeName name="Config.ConfigModel"/>
+<fullyQualifiedTypeName name="RecServer.CenterTimer"/>
 </qualifiedTypeNameHistroy>

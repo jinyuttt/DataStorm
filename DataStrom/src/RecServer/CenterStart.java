@@ -10,6 +10,7 @@
 package RecServer;
 
 import Config.CenterConfig;
+import Config.ConfigModel;
 import DataProcess.BusRegister;
 import EventBus.MessageBus;
 import JNetSocket.MulticastServerSocket;
@@ -48,6 +49,24 @@ public void start()
     //注册请求处理业务
     BusRegister busregister=new BusRegister();
     busregister.start();
+    //启动处理
+    CenterTimer.startMasterThread();
+    CenterTimer.startStateThread();
+    CenterTimer.startStateThread();
+    //本节点
+    initLocalNode();
     
+}
+/*
+ * 
+ */
+private void  initLocalNode()
+{
+    ConfigModel localNode=new ConfigModel();
+    localNode.centerByte=2;
+    localNode.intflage=RandomFlage.getFlage();
+    localNode.flage=String.valueOf( localNode.intflage);
+    CenterTimer.addMaster(localNode);
+    CenterConfig.localCenter=localNode;
 }
 }

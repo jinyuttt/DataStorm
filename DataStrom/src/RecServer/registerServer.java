@@ -17,6 +17,7 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import DataStrom.ServerBus;
 import DataStrom.ServerModel;
 import EventBus.MessageBus;
+import Model.MasterModel;
 import Model.StromCenterModel;
 import NetModel.DataModel;
 import Util.FactoryPackaget;
@@ -102,6 +103,21 @@ public  void recviceData(DataModel data)
              set.add(model,1);
             
         }
+        if(packaget.packagetType==6)
+        {
+            //
+            MasterModel state=(MasterModel)packaget;
+            //传给返回处理
+            MessageBus.post("master", state);
+        }
+        if(packaget.packagetType==7)
+        {
+            //
+            StromCenterModel state=(StromCenterModel)packaget;
+            //传给返回处理
+            MessageBus.post("stromserverinfo", state);
+        }
+        
         
     }
 }
