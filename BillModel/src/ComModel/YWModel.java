@@ -15,7 +15,7 @@ import Util.IDataPackaget;
  *     
  * 项目名称：BillModel    
  * 类名称：YWModel    
- * 类描述：   业务model 
+ * 类描述：   业务model 功能描述
  * 创建人：jinyu    
  * 创建时间：2017年6月10日 下午6:26:09    
  * 修改人：jinyu    
