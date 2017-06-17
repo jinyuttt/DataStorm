@@ -16,7 +16,7 @@ import JNetSocket.UDPClient;
  *     
  * 项目名称：DataStromServer    
  * 类名称：CacheOrg    
- * 类描述：    
+ * 类描述：  数据缓存并超时持久化
  * 创建人：jinyu    
  * 创建时间：2017年6月10日 下午4:39:51    
  * 修改人：jinyu    
