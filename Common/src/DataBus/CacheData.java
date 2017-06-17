@@ -7,8 +7,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 
-/*
+/**
  * 缓存数据
+ *缓存内存数据
  */
 public class CacheData<K,V> {
     boolean isLoadDB=false;

@@ -1,3 +1,4 @@
+
 /**    
  * 文件名：DBClearTimer.java    
  *    
@@ -24,7 +25,7 @@ import DataJsonSerializer.JsonSerializer;
  * 项目名称：CacheReset    
  * 类名称：DBClearTimer    
  * 类描述：    DB清除数据；有DB缓存触发
- * 只保留最近10分钟
+ * 只保留最近10分钟;定时清理数据库数据
  * 创建人：jinyu    
  * 创建时间：2017年6月14日 上午12:39:35    
  * 修改人：jinyu    
