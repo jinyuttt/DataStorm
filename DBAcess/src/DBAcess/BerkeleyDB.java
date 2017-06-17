@@ -28,7 +28,7 @@ import com.sleepycat.je.OperationStatus;
  *     
  * 项目名称：DBAcess    
  * 类名称：BerkeleyDB    
- * 类描述：    
+ * 类描述： BerkeleyDB 数据库初始化使用   
  * 创建人：jinyu    
  * 创建时间：2017年5月27日 上午2:05:51    
  * 修改人：jinyu    
