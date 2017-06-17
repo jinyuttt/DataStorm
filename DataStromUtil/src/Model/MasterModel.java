@@ -15,7 +15,7 @@ import Util.IDataPackaget;
  *     
  * 项目名称：DataStromUtil    
  * 类名称：MasterModel    
- * 类描述：    主中心服务处理
+ * 类描述：主中心相关处理model
  * 创建人：jinyu    
  * 创建时间：2017年6月15日 下午10:09:45    
  * 修改人：jinyu    
