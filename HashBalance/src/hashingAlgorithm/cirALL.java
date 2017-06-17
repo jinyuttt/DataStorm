@@ -7,6 +7,22 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+
+
+
+/**    
+ *     
+ * 项目名称：HashBalance    
+ * 类名称：cirALL    
+ * 类描述： hash均衡计算
+ * 创建人：jinyu    
+ * 创建时间：2017年5月27日 上午2:05:51    
+ * 修改人：jinyu    
+ * 修改时间：2017年5月27日 上午2:05:51    
+ * 修改备注：    
+ * @version     
+ *     
+ */
 public class cirALL<K> {
 	static Random ran = new Random();
 	/** key's count */
