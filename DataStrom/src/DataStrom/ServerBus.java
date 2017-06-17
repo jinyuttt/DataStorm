@@ -15,6 +15,7 @@ import StromModel.StromServerNode;
 
 /**
  * @author jinyu
+ *使用数据集合
  *
  */
 public class ServerBus {
