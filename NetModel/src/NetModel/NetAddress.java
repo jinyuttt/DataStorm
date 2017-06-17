@@ -13,7 +13,7 @@ package NetModel;
  *     
  * 项目名称：NetModel    
  * 类名称：NetAddress    
- * 类描述：    网络地址
+ * 类描述：网络地址；保存来源地址
  * 创建人：jinyu    
  * 创建时间：2017年6月17日 下午6:39:41    
  * 修改人：jinyu    

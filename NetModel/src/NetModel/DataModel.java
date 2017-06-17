@@ -13,7 +13,7 @@ package NetModel;
  *     
  * 项目名称：CommonModel    
  * 类名称：DataModel    
- * 类描述：    网络数据传递
+ * 类描述：网络数据传递对外model
  * 创建人：jinyu    
  * 创建时间：2017年6月10日 上午1:23:23    
  * 修改人：jinyu    
