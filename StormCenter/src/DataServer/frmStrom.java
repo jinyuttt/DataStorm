@@ -28,6 +28,9 @@ import RecServer.CenterStart;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+/**
+*  注册中心界面
+*/
 
 public class frmStrom extends JFrame {
 
