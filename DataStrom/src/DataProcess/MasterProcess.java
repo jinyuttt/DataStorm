@@ -12,9 +12,9 @@ package DataProcess;
 import com.google.common.eventbus.AllowConcurrentEvents;
 
 import Config.CenterConfig;
-import Config.ConfigModel;
 import Model.MasterModel;
 import RecServer.CenterTimer;
+import StromModel.ConfigModel;
 
 
 /**    
@@ -34,44 +34,43 @@ public class MasterProcess {
     @AllowConcurrentEvents
     public void recMasterAsk(MasterModel req)
     {
-        if(req.centerByte==1)
+        ConfigModel model=new ConfigModel();
+        model.action=req.action;
+        model.centerByte=req.centerByte;
+        model.flage=req.flage;
+        model.intflage=Integer.valueOf(req.flage);
+        model.IP=req.IP;
+        model.port=req.port;
+        model.multIP=req.multIP;
+        model.multPort=req.multPort;
+        if(model.centerByte==4||model.centerByte==2)
         {
-            if(CenterConfig.masterCenter==null)
+            //如果是探寻包；则比较查看是否自己是master;
+            //当前如果是自己的选举或者探寻包，则已经取出
+           //自己的选举则不加入
+            if(CenterConfig.localCenter.centerByte==1)
             {
-                ConfigModel model=new ConfigModel();
-                model.action=req.action;
-                model.centerByte=1;
-                model.flage=req.flage;
-                model.intflage=Integer.valueOf(req.flage);
-                model.IP=req.IP;
-                model.port=req.port;
-                model.multIP=req.multIP;
-                model.multPort=req.multPort;
-                CenterConfig.masterCenter=model;
+                //立即发送心跳包；
+                CenterTimer.addMaster(CenterConfig.localCenter);
             }
             else
             {
-                //
-            }
-        }
-        else if(req.centerByte==2)
-        {
-            ConfigModel model=CenterConfig.localCenter;
-            if(model.flage.equals(req.flage)&&model.IP.equals(req.IP)&&model.port==req.port)
-            {
-                //说明是自己
-               //
-            }
-            else
-            {
-                //告诉对方已经有主中心
-                //发送主服务,如果自己是主中心
-                //自己是主中心
-                if(model.centerByte==1)
+                if(CenterConfig.localCenter.centerByte==2&&model.centerByte==2)
                 {
-                    CenterTimer.addMaster(model);
+                    //同时进入选举流程
+                    if(model.intflage>CenterConfig.localCenter.intflage)
+                    {
+                        //
+                        CenterTimer.addMaster(model);
+                    }
                 }
             }
+        }
+        else
+        {
+            //心跳包，所有心跳则加入
+          //  if(model.equals(CenterConfig.localCenter))
+                CenterTimer.addMaster(model);
         }
     }
 }

@@ -40,13 +40,13 @@ public void start()
     StateProcess state=new StateProcess();
     MessageBus.register("state", state);
     //
-    StromCenterProcess center=new StromCenterProcess();
-    MessageBus.register("stromState", center);
+//    CenterStateProcess center=new CenterStateProcess();
+//    MessageBus.register("stromState", center);
     //
     MasterProcess master=new MasterProcess();
     MessageBus.register("master", master);
     //
-    CenterServerProcess serverInfo=new CenterServerProcess();
-    MessageBus.register("stromserverinfo", serverInfo);
+//    CenterServerProcess serverInfo=new CenterServerProcess();
+//    MessageBus.register("stromserverinfo", serverInfo);
 }
 }

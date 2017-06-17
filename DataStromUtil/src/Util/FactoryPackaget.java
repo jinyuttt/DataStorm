@@ -102,7 +102,7 @@ public class FactoryPackaget {
        byte[] flage=new byte[fLen];
        packaget.flage=new String(flage);
        //
-       packaget.state=buf.getInt();
+      
        return packaget;
    }
    private DataPackaget createDataPackaget(ByteBuffer buf)
@@ -255,7 +255,7 @@ public class FactoryPackaget {
                  buf.putShort((short)flage.length);
                  buf.put(flage); 
                  //
-                 buf.putInt(tmp.state);
+             
                 data=buf.array();
        }
        else if(packaget instanceof DataPackaget)

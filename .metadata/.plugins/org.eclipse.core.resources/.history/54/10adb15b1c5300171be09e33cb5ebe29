@@ -1,0 +1,383 @@
+/**    
+ * 文件名：CenterTimer.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年6月15日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package RecServer;
+
+
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.LinkedTransferQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+
+import com.google.common.collect.Iterators;
+
+import Config.CenterConfig;
+import Config.ConfigModel;
+import DataStrom.ServerBus;
+import DataStrom.ServerModel;
+import JNetSocket.MulticastClient;
+import JNetSocket.UDPClient;
+import Model.MasterModel;
+import Model.StromCenterModel;
+import Util.FactoryPackaget;
+import Util.ServerInfo;
+
+/**    
+ *     
+ * 项目名称：DataStrom    
+ * 类名称：CenterTimer    
+ * 类描述：  定时检查
+ * 1 发布新添加的服务
+ * 2 交互服务信息
+ * 3 检查各注册中心状态
+ * 4 及时确认注册中心是否停止
+ * 5 选举通知主注册中心  
+ * 创建人：jinyu    
+ * 创建时间：2017年6月15日 上午1:53:48    
+ * 修改人：jinyu    
+ * 修改时间：2017年6月15日 上午1:53:48    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class CenterTimer {
+    private static Thread  stateReset=null;//检查线程
+    
+    private static ReentrantLock lock=new ReentrantLock();
+    private static boolean isRuning;//控制线程启动
+    private static volatile boolean isMasterRuning=false;
+    private static LinkedBlockingQueue<ServerInfo> newadd=new LinkedBlockingQueue<ServerInfo>();
+    private  static LinkedBlockingQueue<ConfigModel> masterVote=new LinkedBlockingQueue<ConfigModel>();
+    /**
+     * 新接受的服务信息
+     * 及时通知更新新服务
+     */
+    public static void addServer(ServerInfo info)
+    {
+        newadd.offer(info);
+    }
+    /*
+     * 与主中心选举相关的包
+     * 直接把本中心配置加入
+     */
+    public static  void addMaster(ConfigModel model)
+    {
+            masterVote.offer(model);
+    }
+    /*
+     * 启动线程及时发送本中心接受的新的服务信息
+     * 及时更新新服务
+     */
+    public static void startThread()
+    {
+            try
+            {
+            if(stateReset==null)
+            {
+                stateReset=new   Thread(new Runnable()
+                        {
+                           @Override
+                           public void run() {
+                               FactoryPackaget f=new FactoryPackaget();
+                               MulticastClient client=new MulticastClient();//组播通讯
+                              while(isRuning)
+                              {
+                               try {
+                                   
+                                        ServerInfo tmp=newadd.take();
+                                        byte[]data= f.unDataModel(tmp);
+                                        client.sendData(CenterConfig.localCenter.multIP, CenterConfig.localCenter.port, data);
+                                        
+                               } catch (InterruptedException e) {
+                                   e.printStackTrace();
+                               }
+                               
+                              }
+                           }
+                    
+                        });
+                stateReset.setDaemon(true);
+                stateReset.setName("sendServerState");
+                stateReset.start();
+                    
+                }
+            }
+            finally
+            {
+                lock.unlock();
+            }
+        }
+    
+    /*
+     * 更新服务信息
+     * 各中心节点服务交互
+     *服务信息同步（时间稍长）
+     */
+    public static void startServerThread()
+    {
+            try
+            {
+         
+                Thread  state=new   Thread(new Runnable()
+                        {
+                           @Override
+                           public void run() {
+                               FactoryPackaget f=new FactoryPackaget();
+                               MulticastClient client=new MulticastClient();//组播通讯
+                              while(isRuning)
+                              {
+                                        //发送范围信息及自己的标识
+                                       //遍历服务信息；
+                                    try {
+                                        TimeUnit.SECONDS.sleep(20);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                     StromCenterModel tmp=new StromCenterModel();
+                                     tmp.centerFlage=CenterConfig.localCenter.flage;
+                                      for(String key:ServerBus.map.keySet())
+                                      {
+                                         Set<ServerModel> server= ServerBus.map.get(key);
+                                         Iterator<ServerModel>   it = server.iterator();
+                                         while(it.hasNext())
+                                         {
+                                             ServerModel s=  it.next();
+                                             tmp.info=new ServerInfo();
+                                             tmp.info.IP=s.IP;
+                                             tmp.info.isMaster=s.isMaster;
+                                             tmp.info.master_slave=s.master_slave;
+                                             tmp.info.netType=s.netType;
+                                             tmp.info.port=s.port;
+                                             tmp.info.serverName=s.name;
+                                             tmp.info.sessionid=0;
+                                             byte[]data= f.unDataModel(tmp);
+                                             client.sendData(CenterConfig.localCenter.multIP, CenterConfig.localCenter.port, data); 
+                                         }
+                                        
+                                      }
+                                       
+                                    
+                              }
+                           }
+                    
+                        });
+                state.setDaemon(true);
+                state.setName("centerState");
+                state.start();
+            }
+            finally
+            {
+              
+            }
+        }
+    
+    /*
+     * 启动线程处理master心跳及选举
+     */
+    public static void startMasterThread()
+    {
+         
+                Thread master=new   Thread(new Runnable()
+                        {
+                           @Override
+                           public void run() {
+                               FactoryPackaget f=new   FactoryPackaget();
+                               MulticastClient client=new MulticastClient();//组播通讯
+                               UDPClient udpClient=new UDPClient();
+                              while(isRuning)
+                              {
+                                //自己发出的已经取出
+                                   ConfigModel masterinfo=null;
+                                try {
+                                    masterinfo = masterVote.poll(2,TimeUnit.SECONDS);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                  if(masterinfo==null)
+                                  {
+                                      if(CenterConfig.localCenter.centerByte==2)
+                                      {
+                                        //说明是选举流程
+                                        //自己设置为主中心
+                                          CenterConfig.localCenter.centerByte=1;
+                                          CenterConfig.masterCenter=CenterConfig.localCenter;
+                                          masterinfo= CenterConfig.masterCenter;
+                                          //通知其余中心
+                                          MasterModel modelask=new MasterModel();
+                                          modelask.flage=masterinfo.flage;
+                                          modelask.action=masterinfo.action;
+                                          modelask.centerByte=masterinfo.centerByte;
+                                          modelask.IP=masterinfo.IP;
+                                          modelask.multIP=masterinfo.multIP;
+                                          modelask.multPort=masterinfo.multPort;
+                                          modelask.port=masterinfo.port;
+                                          modelask.serverName="";
+                                          byte[]data=f.unDataModel(modelask);
+                                          //点对点(发给自己一次,走判断流程)
+                                          udpClient.sendData(CenterConfig.localCenter.IP, CenterConfig.localCenter.port, data);
+                                          //组播通知
+                                          client.sendData(CenterConfig.localCenter.multIP, CenterConfig.localCenter.port, data);
+                                          startCheckMasterThread();
+                                      }
+                                      else
+                                      {
+                                          if(CenterConfig.masterCenter.action)
+                                          {
+                                      //说明是没有收到主中心心跳包；进入判断流程
+                                       //发出一个探寻包；
+                                      //通知其余中心
+                                      masterinfo=CenterConfig.masterCenter;
+                                      MasterModel modelask=new MasterModel();
+                                      modelask.flage=masterinfo.flage;
+                                      modelask.action=masterinfo.action;
+                                      modelask.centerByte=4;
+                                      modelask.IP=masterinfo.IP;
+                                      modelask.multIP=masterinfo.multIP;
+                                      modelask.multPort=masterinfo.multPort;
+                                      modelask.port=masterinfo.port;
+                                      modelask.serverName="";
+                                      byte[]data=f.unDataModel(modelask);
+                                      //点对点
+                                      udpClient.sendData(CenterConfig.localCenter.IP, CenterConfig.localCenter.port, data);
+                                      //组播通知
+                                      client.sendData(CenterConfig.localCenter.multIP, CenterConfig.localCenter.port, data);
+                                      CenterConfig.masterCenter.action=false;//已经进入判断，认为其死亡；
+                                      }
+                                          else
+                                          {
+                                              //确认死亡，进选举流程；
+                                              CenterConfig.localCenter.centerByte=2;
+                                              
+                                              masterVote.offer(CenterConfig.localCenter);
+                                              
+                                          }
+                                          }
+                                  }
+                                  else
+                                  {
+                                     //如果收到心跳包；或者是主中心发出的确认包；
+                                      if(CenterConfig.localCenter.centerByte==2||CenterConfig.masterCenter==null)
+                                      {
+                                          CenterConfig.localCenter.centerByte=3;
+                                          masterinfo.action=true;
+                                          if(masterinfo.intflage==CenterConfig.localCenter.intflage)
+                                          {
+                                              //说明当前自己是master;
+                                              CenterConfig.localCenter.centerByte=1;
+                                          }
+                                          CenterConfig.masterCenter=masterinfo;
+                                      }
+                                      else
+                                      {
+                                          if(CenterConfig.localCenter.centerByte=1)
+                                          {
+                                              
+                                          }
+                                      }
+                              }
+                              }
+                           }
+                    
+                        });
+                master.setDaemon(true);
+                master.setName("sendVoteCheck");
+                master.start();
+                    
+                }
+
+    /*
+     * 启动线程及时发送master信息
+     * master发送心跳
+     */
+    public static void startCheckMasterThread()
+    {
+       
+                Thread check=new   Thread(new Runnable()
+                        {
+                           @Override
+                           public void run() {
+                               FactoryPackaget f=new   FactoryPackaget();
+                               MulticastClient client=new MulticastClient();//组播通讯
+                               UDPClient udpClient=new UDPClient();
+                              while(isMasterRuning)
+                              {
+                                  //如果没有接收到主服务；
+                                  //主服务的心跳（包括注册服务信息）
+                                  //检查刷新
+                                  //判断条件只是为了同步问题；
+                                  //该线程只在本节点中心是master才存在
+                                   if(CenterConfig.localCenter.centerByte==1)
+                                   {
+                                       //说明自己是master;
+                                       ConfigModel  masterinfo=CenterConfig.localCenter;
+                                       MasterModel modelask=new MasterModel();
+                                       modelask.flage=masterinfo.flage;
+                                       modelask.action=masterinfo.action;
+                                       modelask.centerByte=masterinfo.centerByte;
+                                       modelask.IP=masterinfo.IP;
+                                       modelask.multIP=masterinfo.multIP;
+                                       modelask.multPort=masterinfo.multPort;
+                                       modelask.port=masterinfo.port;
+                                       modelask.serverName="1";
+                                       byte[]data=f.unDataModel(modelask);
+                                       //点对点
+                                       udpClient.sendData(CenterConfig.localCenter.IP, CenterConfig.localCenter.port, data);
+                                       //组播通知
+                                       client.sendData(CenterConfig.localCenter.multIP, CenterConfig.localCenter.port, data);
+                                   }
+                                   else if(CenterConfig.masterCenter!=null&&CenterConfig.masterCenter.equals(CenterConfig.localCenter))
+                                   {
+                                       CenterConfig.localCenter.action=true;
+                                       CenterConfig.localCenter.centerByte=1;
+                                       //说明自己是；
+                                       ConfigModel  masterinfo=CenterConfig.localCenter;
+                                       MasterModel modelask=new MasterModel();
+                                       modelask.flage=masterinfo.flage;
+                                       modelask.action=masterinfo.action;
+                                       modelask.centerByte=masterinfo.centerByte;
+                                       modelask.IP=masterinfo.IP;
+                                       modelask.multIP=masterinfo.multIP;
+                                       modelask.multPort=masterinfo.multPort;
+                                       modelask.port=masterinfo.port;
+                                       modelask.serverName="";
+                                       byte[]data=f.unDataModel(modelask);
+                                       //点对点
+                                       udpClient.sendData(CenterConfig.localCenter.IP, CenterConfig.localCenter.port, data);
+                                       //组播通知
+                                       client.sendData(CenterConfig.localCenter.multIP, CenterConfig.localCenter.port, data);
+                                       
+                                   }
+                                   else
+                                   {
+                                       try {
+                                        TimeUnit.MILLISECONDS.sleep(200);
+                                    } catch (InterruptedException e) {
+                                      
+                                        e.printStackTrace();
+                                    }
+                                   }
+                                 
+                              }
+                           }
+                    
+                        });
+                check.setDaemon(true);
+                check.setName("sendmasterstate");
+                check.start();
+                    
+                }
+
+    
+        }
+    
+    
+    
+

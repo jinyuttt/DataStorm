@@ -43,4 +43,9 @@ public  byte[] args;
  * 数据包ID
  */
 public int packagetID;
+
+/**
+ * 转发时保留源地址
+ */
+public String srcAddr="";
 }

@@ -14,6 +14,7 @@ package Util;
  * 项目名称：DataStromUtil    
  * 类名称：ServerInfo    
  * 类描述：    服务信息；服务端发送给中心
+ * 注册使用
  * 创建人：jinyu    
  * 创建时间：2017年6月10日 上午1:49:01    
  * 修改人：jinyu    

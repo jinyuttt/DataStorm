@@ -1,0 +1,141 @@
+/**    
+ * 文件名：ReqProcess.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年6月10日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package DataProcess;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import com.google.common.eventbus.AllowConcurrentEvents;
+
+import Config.CenterConfig;
+import DataStrom.ServerBus;
+import NetModel.NetAddress;
+import NetProtocol.judpClient;
+import StromModel.ServerModel;
+import Util.FactoryPackaget;
+import Util.ReqPackaget;
+import Util.ServerInfo;
+
+/**    
+ *     
+ * 项目名称：DataStrom    
+ * 类名称：ReqProcess    
+ * 类描述：    注册中心接收到客户端的请求
+ * 创建人：jinyu    
+ * 创建时间：2017年6月10日 上午3:06:31    
+ * 修改人：jinyu    
+ * 修改时间：2017年6月10日 上午3:06:31    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class ReqProcess {
+    private FactoryPackaget f=new FactoryPackaget();
+    private StromCenterBiil  biil=new StromCenterBiil();
+    private   ConcurrentLinkedQueue<ReqPackaget> cache=new ConcurrentLinkedQueue<ReqPackaget>();
+  private  ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+  private  volatile boolean isRuning=false;
+    @AllowConcurrentEvents
+public void recRequest(ReqPackaget req)
+{
+    if(CenterConfig.localCenter.centerByte==1)
+    {
+        //如果自己是master,则处理
+        if(req.reqType==1)
+        {
+            //获取服务地址
+           //
+            ServerModel model= biil.getServerAddr(req.serverName);
+            if(model!=null)
+            {
+                //转换成数据
+                NetAddress addr= ServerBus.objSocket.getByKey(String.valueOf(state.sessionid));
+                if(addr!=null)
+                {
+                    judpClient client=new judpClient();
+                    //
+                     ServerInfo info=new ServerInfo();
+                    info.IP=model.IP;
+                    info.port=model.port;
+                    info.netType=model.netType;
+                    info.serverName=model.name;
+                    byte[] tmp=f.unDataModel(info);
+                    
+                    client.sendData(sIP, sPort, data);
+                }
+            }
+        }
+    }
+    else
+    {
+        //转给master;
+        if(CenterConfig.masterCenter!=null&&CenterConfig.masterCenter.action)
+        {
+            byte[] data=f.unDataModel(req);
+            judpClient client=new judpClient();
+           client.sendData(CenterConfig.masterCenter.IP, CenterConfig.masterCenter.port, data);
+           client.close();
+        }
+        else
+        {
+            cache.add(req);
+            //存储一定时间
+            startThread();
+        }
+    }
+}
+    
+    /*
+     * 启动线程发送缓存数据
+     * 发送完则线程结束
+     */
+    private  void startThread()
+    {
+        if(isRuning)
+        {
+            return;
+        }
+        cachedThreadPool.execute(new Runnable(){
+
+            @Override
+            public void run() {
+                
+                judpClient client=new judpClient();
+             
+             while(isRuning)
+             {
+                 if(CenterConfig.masterCenter!=null&&CenterConfig.masterCenter.action)
+                 {
+                     ReqPackaget req=    cache.poll();
+                     byte[] data=f.unDataModel(req);
+                     client.sendData(CenterConfig.masterCenter.IP, CenterConfig.masterCenter.port, data);
+                 }
+                 else
+                 {
+                     try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                   
+                        e.printStackTrace();
+                    }
+                 }
+                 if(cache.isEmpty())
+                 {
+                     isRuning=false;
+                 }
+                     
+             }
+             client.close();
+            }
+            
+        }); 
+    }
+}

@@ -11,6 +11,10 @@ package DataProcess;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 
+import DataStrom.ServerBus;
+import NetModel.NetAddress;
+import NetProtocol.judpClient;
+import Util.FactoryPackaget;
 import Util.RspPackaget;
 
 /**    
@@ -27,9 +31,18 @@ import Util.RspPackaget;
  *     
  */
 public class RspProcess {
+    FactoryPackaget f=new FactoryPackaget();
     @AllowConcurrentEvents
 public void recRsponse(RspPackaget rsp)
 {
-    
+    //收到服务回执
+    //转给客户端
+     NetAddress netcall=     ServerBus.objSocket.getByKey(String.valueOf(rsp.sessionid));
+     if(netcall!=null)
+     {
+       byte[]data=f.unDataModel(rsp);
+        judpClient client=new judpClient();
+       client.sendData(netcall.srcIP, netcall.srcPort, data);
+     }
 }
 }

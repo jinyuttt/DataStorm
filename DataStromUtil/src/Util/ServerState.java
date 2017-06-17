@@ -31,5 +31,13 @@ public class ServerState extends IDataPackaget{
     public  String  srcIP;
     public int srcPort;
     public String flage;
-    public int state;
+    /*
+     * 是否是主从服务
+     */
+    public boolean master_slave;
+
+    /*
+     * 是否是主服务
+     */
+    public boolean isMaster;
 }

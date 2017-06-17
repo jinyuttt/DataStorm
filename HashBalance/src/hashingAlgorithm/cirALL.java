@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class cirALL {
+public class cirALL<K> {
 	static Random ran = new Random();
 	/** key's count */
 	private static final Integer EXE_TIMES = 100000;
@@ -50,6 +50,31 @@ public class cirALL {
       	}
 		
 	}
+	@SuppressWarnings("unchecked")
+    public K GetCurNode(CopyOnWriteArrayList<K> listData)
+    {
+	 
+        int i=0;
+        NODE_COUNT=listData.size();
+        List<Node> allNodes =getNodes(NODE_COUNT);
+        Iterator<Node> it= allNodes.iterator();
+        while(it.hasNext())
+        {
+            it.next().setObjData(listData.get(i));
+            i++;
+        }
+        //
+        Object obj= GetCurNode(allNodes);
+        if(obj==null)
+        {
+        return  listData.get(0);
+        }
+        else
+        {
+            return  (K)obj;
+        }
+        
+    }
 	/**
 	 * @param allNodes
 	 * @return  ·µ»ØÊý¾Ý

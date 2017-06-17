@@ -8,5 +8,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/DataStromUtil"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NetSocket"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NetProtocol"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/HashBalance"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

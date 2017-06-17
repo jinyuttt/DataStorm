@@ -44,4 +44,11 @@ public String serverName;
  * session id
  */
 public long sessionid;
+
+/*
+ * 是否明确需要回执
+ * 0不需要
+ * 1需要
+ */
+public byte rsp=0;
 }

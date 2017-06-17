@@ -54,6 +54,7 @@ public int    multPort=4444;
 * 1 主中心
 * 2 预计成为主中心
 * 3. 一般存活中心
+* 4  探寻主服务请求包
 * 
 */
 public byte centerByte=0;

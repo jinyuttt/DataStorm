@@ -10,11 +10,11 @@
 package RecServer;
 
 import Config.CenterConfig;
-import Config.ConfigModel;
 import DataProcess.BusRegister;
 import EventBus.MessageBus;
 import JNetSocket.MulticastServerSocket;
 import JNetSocket.UDPServerSocket;
+import StromModel.ConfigModel;
 
 /**    
  *     
@@ -51,8 +51,7 @@ public void start()
     busregister.start();
     //启动处理
     CenterTimer.startMasterThread();
-    CenterTimer.startStateThread();
-    CenterTimer.startStateThread();
+    CenterTimer.startServerThread();
     //本节点
     initLocalNode();
     
@@ -66,7 +65,8 @@ private void  initLocalNode()
     localNode.centerByte=2;
     localNode.intflage=RandomFlage.getFlage();
     localNode.flage=String.valueOf( localNode.intflage);
-    CenterTimer.addMaster(localNode);
     CenterConfig.localCenter=localNode;
+    CenterTimer.addMaster(localNode);//选举自己
+  
 }
 }

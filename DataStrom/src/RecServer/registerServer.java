@@ -11,15 +11,20 @@ package RecServer;
 
 
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import com.google.common.collect.Multiset;
 import com.google.common.eventbus.AllowConcurrentEvents;
 
 import DataStrom.ServerBus;
-import DataStrom.ServerModel;
 import EventBus.MessageBus;
 import Model.MasterModel;
 import Model.StromCenterModel;
 import NetModel.DataModel;
+import NetModel.NetAddress;
+import NetPackaget.PackagetRandom;
+import StromModel.ServerModel;
+import StromModel.StromServerNode;
 import Util.FactoryPackaget;
 import Util.IDataPackaget;
 import Util.ReqPackaget;
@@ -41,11 +46,20 @@ import Util.ServerState;
  *     
  */
 public class registerServer {
+    ReentrantReadWriteLock lock=new ReentrantReadWriteLock();
     @AllowConcurrentEvents
 public  void recviceData(DataModel data)
 {
+        NetAddress addr=new NetAddress();
+    
+        addr.srcIP=data.srcIP;
+        addr.srcPort=data.srcPort;
+    
         FactoryPackaget factory=new FactoryPackaget();
         IDataPackaget packaget= factory.unPackaget(data.data);
+        packaget.sessionid =PackagetRandom.getSequeueID();
+        //
+        ServerBus.objSocket.put(String.valueOf(packaget.sessionid),addr );
         processData(packaget);
 }
     @SuppressWarnings("unchecked")
@@ -61,22 +75,50 @@ public  void recviceData(DataModel data)
             model.master_slave=info.master_slave;
             model.port=info.port;
             ServerBus.map.put(model.name, model);
+            StromServerNode node=  ServerBus.serverList.get(model.name);
+          if(node==null)
+          {
+              lock.writeLock().lock();
+              if(node==null)
+              {
+                 node=new StromServerNode();
+                 ServerBus.serverList.put(model.name, node);
+              }
+               node.addServer(model, true);
+               lock.writeLock().unlock();
+          }
+          
+            
         }
         else if(packaget.packagetType==1)
         {
             ServerState state=(ServerState)packaget;
             //传给状态服务端
             MessageBus.post("state", state);
+            ServerBus.objSocket.remove(String.valueOf(state.sessionid));
+            
         }
         else if(packaget.packagetType==2)
         {
             ReqPackaget req=(ReqPackaget)packaget;
+            if(!req.srcAddr.isEmpty())
+            {
+                String[] src=req.srcAddr.split("#");
+
+                NetAddress addr=new NetAddress();
+            
+                addr.srcIP=src[0];
+                addr.srcPort=Integer.valueOf(src[1]);
+                ServerBus.objSocket.put(String.valueOf(packaget.sessionid),addr );
+            }
             //传给请求处理
             MessageBus.post("req", req);
+            
         }
         else if(packaget.packagetType==3)
         {
             RspPackaget rsp=(RspPackaget)packaget;
+            
             //传给返回处理
             MessageBus.post("rsp", rsp);
         }
@@ -86,6 +128,7 @@ public  void recviceData(DataModel data)
             StromCenterModel state=(StromCenterModel)packaget;
             //传给返回处理
             MessageBus.post("stromState", state);
+            ServerBus.objSocket.remove(String.valueOf(state.sessionid));
         }
         if(packaget.packagetType==4)
         {
@@ -100,7 +143,8 @@ public  void recviceData(DataModel data)
            model.netType=tmp.netType;
            model.port=tmp.port;
            Multiset<ServerModel> set=  (Multiset<ServerModel>) ServerBus.map.get(tmp.serverName);
-             set.add(model,1);
+           set.add(model,1);
+           ServerBus.objSocket.remove(String.valueOf(tmp.sessionid));
             
         }
         if(packaget.packagetType==6)
@@ -109,6 +153,7 @@ public  void recviceData(DataModel data)
             MasterModel state=(MasterModel)packaget;
             //传给返回处理
             MessageBus.post("master", state);
+            ServerBus.objSocket.remove(String.valueOf(state.sessionid));
         }
         if(packaget.packagetType==7)
         {
@@ -116,6 +161,7 @@ public  void recviceData(DataModel data)
             StromCenterModel state=(StromCenterModel)packaget;
             //传给返回处理
             MessageBus.post("stromserverinfo", state);
+            ServerBus.objSocket.remove(String.valueOf(state.sessionid));
         }
         
         

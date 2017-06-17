@@ -9,7 +9,7 @@
  */
 package Config;
 
-
+import StromModel.ConfigModel;
 
 /**    
  *     

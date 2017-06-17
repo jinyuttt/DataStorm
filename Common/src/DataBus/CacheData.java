@@ -18,6 +18,13 @@ public class CacheData<K,V> {
     {
         this.listener=listener;
     }
+    
+    /**
+     * 构造函数
+     * maxsize 缓存最大数量
+     * time 缓存时间 秒
+     * isLoadDB 是否从数据库加载
+     */
    public  CacheData(long maxsize,int time,boolean isLoadDB)
   {
        this.isLoadDB=isLoadDB;
