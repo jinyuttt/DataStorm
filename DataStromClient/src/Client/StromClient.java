@@ -17,6 +17,7 @@ import Util.ReqPackaget;
  * 项目名称：DataStromClient    
  * 类名称：StromClient    
  * 类描述：    发送给中心的请求
+ * 提交数据或者请求服务地址
  * 创建人：jinyu    
  * 创建时间：2017年6月11日 上午2:15:20    
  * 修改人：jinyu    
