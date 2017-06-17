@@ -25,7 +25,7 @@ import NetModel.DataModel;
  *     
  * 项目名称：JNetSocket    
  * 类名称：MulticastServerSocket    
- * 类描述：    
+ * 类描述：组播接收端
  * 创建人：jinyu    
  * 创建时间：2017年5月27日 上午1:22:38    
  * 修改人：jinyu    

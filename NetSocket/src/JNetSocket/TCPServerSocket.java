@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *     
  * 项目名称：JNetSocket    
  * 类名称：TCPSocket    
- * 类描述：    
+ * 类描述： TCP服务端
  * 创建人：jinyu    
  * 创建时间：2017年5月27日 上午12:09:42    
  * 修改人：jinyu    

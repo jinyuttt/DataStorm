@@ -19,7 +19,7 @@ import java.net.UnknownHostException;
  *     
  * 项目名称：JNetSocket    
  * 类名称：MulticastClient    
- * 类描述：    
+ * 类描述：    组播客户端
  * 创建人：jinyu    
  * 创建时间：2017年5月27日 上午1:37:01    
  * 修改人：jinyu    
