@@ -30,7 +30,7 @@ import RecviceData.Session;
  *     
  * 项目名称：NetProtocol    
  * 类名称：ListenerServer    
- * 类描述：    接收数据
+ * 类描述：    监听全部接收数据
  * 创建人：jinyu    
  * 创建时间：2017年6月11日 下午11:03:32    
  * 修改人：jinyu    

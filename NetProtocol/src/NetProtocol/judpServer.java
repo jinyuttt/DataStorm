@@ -16,7 +16,7 @@ import JNetSocket.UDPServerSocket;
  *     
  * 项目名称：NetProtocol    
  * 类名称：judpServer    
- * 类描述：    
+ * 类描述：udp服务端接收
  * 创建人：jinyu    
  * 创建时间：2017年6月11日 下午7:23:58    
  * 修改人：jinyu    

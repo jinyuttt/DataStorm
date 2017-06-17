@@ -24,7 +24,7 @@ import NetPackaget.SubPackaget;
  *     
  * 项目名称：NetProtocol    
  * 类名称：judp    
- * 类描述：   upd客户端
+ * 类描述：   upp客户端
  * 被封装发送 
  * 创建人：jinyu    
  * 创建时间：2017年6月11日 下午7:12:40    
