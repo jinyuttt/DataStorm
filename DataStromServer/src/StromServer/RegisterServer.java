@@ -28,7 +28,7 @@ import Util.ServerInfo;
  *     
  * 项目名称：DataStromServer    
  * 类名称：RegisterServer    
- * 类描述：   启动对服务注册
+ * 类描述：启动对服务注册
  * 创建人：jinyu    
  * 创建时间：2017年6月10日 上午3:25:33    
  * 修改人：jinyu    
