@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="NetModel.DataModel"/>
-<fullyQualifiedTypeName name="FactoryPackaget.SubNetPackaget"/>
-<fullyQualifiedTypeName name="FactoryPackaget.ReturnCode"/>
 <fullyQualifiedTypeName name="CacheData.CacheOrg"/>
 <fullyQualifiedTypeName name="RecviceData.Session"/>
 <fullyQualifiedTypeName name="com.google.common.collect.HashMultimap"/>
@@ -60,4 +57,7 @@
 <fullyQualifiedTypeName name="NetModel.NetAddress"/>
 <fullyQualifiedTypeName name="NetProtocol.judpClient"/>
 <fullyQualifiedTypeName name="Util.FactoryPackaget"/>
+<fullyQualifiedTypeName name="StromModel.LogMsg"/>
+<fullyQualifiedTypeName name="StromServer.RegisterServer"/>
+<fullyQualifiedTypeName name="StromRegister.ProcessRegister"/>
 </qualifiedTypeNameHistroy>

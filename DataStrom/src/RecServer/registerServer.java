@@ -23,6 +23,7 @@ import Model.StromCenterModel;
 import NetModel.DataModel;
 import NetModel.NetAddress;
 import NetPackaget.PackagetRandom;
+import StromModel.LogMsg;
 import StromModel.ServerModel;
 import StromModel.StromServerNode;
 import Util.FactoryPackaget;
@@ -87,7 +88,12 @@ public  void recviceData(DataModel data)
                node.addServer(model, true);
                lock.writeLock().unlock();
           }
-          
+          LogMsg msg=new LogMsg();
+          msg.level=0;
+           msg.addmsg("收到服务："+model.name);
+           msg.addmsg("IP:"+model.IP);
+           msg.addmsg("服务标识："+model.falge);
+          MessageBus.post("LogInfo", msg);
             
         }
         else if(packaget.packagetType==1)
@@ -113,6 +119,10 @@ public  void recviceData(DataModel data)
             }
             //传给请求处理
             MessageBus.post("req", req);
+            LogMsg msg=new LogMsg();
+            msg.level=0;
+           msg.msg="收到客户端请求";
+            MessageBus.post("LogInfo", msg);
             
         }
         else if(packaget.packagetType==3)

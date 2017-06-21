@@ -32,6 +32,6 @@ public class ServerInfo extends IDataPackaget{
     public int port;
     public byte netType=0;
     public String serverName;
-    public boolean master_slave;
+    public boolean master_slave=false;
     public boolean isMaster;
 }

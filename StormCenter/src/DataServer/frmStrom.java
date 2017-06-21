@@ -23,7 +23,9 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 
+import EventBus.MessageBus;
 import RecServer.CenterStart;
+import StromModel.LogMsg;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -43,6 +45,7 @@ public class frmStrom extends JFrame {
 	private final JLabel lblNewLabel = new JLabel("New label");
 	private JTable table;
 	JSplitPane splitPane;
+	JTextArea textArea;
 
 	/**
 	 * Launch the application.
@@ -81,6 +84,7 @@ public class frmStrom extends JFrame {
 				//
 				CenterStart  start=new CenterStart();
 				start.start();
+			    MessageBus.register("LogInfo", this);
 			}
 			@Override
 			public void windowActivated(WindowEvent e) {
@@ -145,9 +149,23 @@ public class frmStrom extends JFrame {
 		tabbedPane.addTab("测试信息", null, panel_2, null);
 		panel_2.setLayout(new BorderLayout(0, 0));
 		
-		JTextArea textArea = new JTextArea();
+		 textArea = new JTextArea();
+		 textArea.setLineWrap(true);        //激活自动换行功能 
+		 textArea.setWrapStyleWord(true);  
 		panel_2.add(textArea);
 		contentPane.add(lblNewLabel, BorderLayout.SOUTH);
 	}
-
+    public void logShow(LogMsg msg)
+    {
+        if(msg.msg.isEmpty())
+        {
+            textArea.setText(msg.toString());
+        }
+        else if(msg.objMsg==null)
+        {
+            textArea.setText(msg.msg);
+        }
+            
+   
+    }
 }

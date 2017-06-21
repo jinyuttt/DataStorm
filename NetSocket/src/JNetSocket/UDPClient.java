@@ -55,11 +55,12 @@ public void bindLocal(String host,int port)
     
 public void sendData(String host,int port,byte[]data)
     {
-        InetAddress address = null;
+      
         try {
             if(socket==null)
             {
-                socket =new DatagramSocket();
+                socket =new DatagramSocket(0);
+                socket.setSendBufferSize(128);
               if(isBind)
             {
                   SocketAddress local=new InetSocketAddress(localAddr,localPort);
@@ -69,19 +70,16 @@ public void sendData(String host,int port,byte[]data)
         } catch (SocketException e2) {
             e2.printStackTrace();
         } 
-        try {
-            address = InetAddress.getByName(host);
-        } catch (UnknownHostException e1) {
-            e1.printStackTrace();
-        }  
-        //服务器地址  
         //创建发送方的数据报信息  
-        DatagramPacket dataGramPacket = new DatagramPacket(data, data.length, address, port);  
-        try {
-            socket.setSendBufferSize(128);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
+       InetAddress destination  = null;
+    try {
+        destination  = InetAddress.getByName(host);
+    } catch (UnknownHostException e1) {
+        // TODO Auto-generated catch block
+        e1.printStackTrace();
+    }
+            DatagramPacket dataGramPacket = null;
+            dataGramPacket = new DatagramPacket(data, data.length, destination , port);
         try {
             socket.send(dataGramPacket);
         } catch (IOException e) {

@@ -30,7 +30,7 @@ public class ConfigModel {
     /**
      * 注册中心地址
      */
-public String  IP="host";
+public String  IP="192.168.3.139";
 
 /*
  * 注册中心端口

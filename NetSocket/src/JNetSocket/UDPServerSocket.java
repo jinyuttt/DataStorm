@@ -92,7 +92,7 @@ public class UDPServerSocket  {
         recData.setDaemon(true);
         recData.setName("UDPServer");
         recData.start();
-        return false;
+        return true;
      
     }
    

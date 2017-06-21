@@ -98,6 +98,10 @@ public class DBClearTimer {
                                 }
      ;
                        byte[] value=  dbStr.get(t);
+                       if(value==null)
+                       {
+                           continue;
+                       }
                        ByteBuffer f=ByteBuffer.wrap(value);
                        long key = f.getLong();
                        long cur=TimerCount.CountTime();

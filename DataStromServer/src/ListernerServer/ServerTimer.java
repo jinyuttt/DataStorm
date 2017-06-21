@@ -11,7 +11,7 @@ package ListernerServer;
 
 import java.util.Map;
 
-import java.util.concurrent.locks.ReentrantLock;
+
 
 import Config.CenterConfig;
 
@@ -36,8 +36,7 @@ import Util.ServerInfo;
  */
 public class ServerTimer {
     private static Thread  stateReset=null;//检查线程
-    private static ReentrantLock lock=new ReentrantLock();
-    protected static boolean isRuning;//控制线程启动
+    protected static boolean isRuning=true;//控制线程启动
     /*
      * 启动线程发送state
      */
@@ -80,7 +79,7 @@ public class ServerTimer {
             }
             finally
             {
-                lock.unlock();
+               
             }
         }
    
