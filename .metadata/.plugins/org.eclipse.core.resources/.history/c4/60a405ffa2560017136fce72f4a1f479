@@ -1,0 +1,37 @@
+/**    
+ * 文件名：ListenerReq.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年6月11日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package Client;
+
+import com.google.common.eventbus.AllowConcurrentEvents;
+
+import Util.IDataPackaget;
+
+/**    
+ *     
+ * 项目名称：DataStromClient    
+ * 类名称：ListenerReq    
+ * 类描述：    
+ * 创建人：jinyu    
+ * 创建时间：2017年6月11日 下午4:07:45    
+ * 修改人：jinyu    
+ * 修改时间：2017年6月11日 下午4:07:45    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class ListenerReq {
+    
+    @AllowConcurrentEvents
+public void  listenerClient(IDataPackaget packaget)
+{
+        judpClient client=new judpClient();
+        cl
+}
+}

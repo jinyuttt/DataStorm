@@ -1,0 +1,76 @@
+/**    
+ * 文件名：WeightRandom.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年6月23日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package ClientChoice;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+/**    
+ *     
+ * 项目名称：DataStromClient    
+ * 类名称：WeightRandom    
+ * 类描述：    
+ * 创建人：jinyu    
+ * 创建时间：2017年6月23日 上午12:13:51    
+ * 修改人：jinyu    
+ * 修改时间：2017年6月23日 上午12:13:51    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class WeightRandom {
+    public WeightRandom(int num)
+    {
+        for(int i=0;i<num;i++)
+        {
+           WeightCategory wc= new WeightCategory("wc"+(i+1),1);  
+           categorys.add(wc);
+        }
+    }
+    static List<WeightCategory>  categorys = new ArrayList<WeightCategory>();    
+    private static Random random = new Random();    
+        
+//    public static void initData() {    
+//        WeightCategory wc1 = new WeightCategory("A",60);    
+//        WeightCategory wc2 = new WeightCategory("B",20);    
+//        WeightCategory wc3 = new WeightCategory("C",20);    
+//        categorys.add(wc1);    
+//        categorys.add(wc2);    
+//        categorys.add(wc3);    
+//    }    
+    public int  getWeightCategory()
+    {
+        
+    }
+    public static void main(String[] args) {    
+         // initData();    
+          Integer weightSum = 0;    
+          for (WeightCategory wc : categorys) {    
+              weightSum += wc.getWeight();    
+          }    
+    
+          if (weightSum <= 0) {    
+           System.err.println("Error: weightSum=" + weightSum.toString());    
+           return;    
+          }    
+          Integer n = random.nextInt(weightSum); // n in [0, weightSum)    
+          Integer m = 0;    
+          for (WeightCategory wc : categorys) {    
+               if (m <= n && n < m + wc.getWeight()) {    
+                 System.out.println("This Random Category is "+wc.getCategory());    
+                 break;    
+               }    
+               m += wc.getWeight();    
+          }    
+    
+              
+    }    
+}

@@ -10,6 +10,7 @@
 package DataProcess;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
 
 import DataStrom.ServerBus;
 import NetModel.NetAddress;
@@ -33,6 +34,7 @@ import Util.RspPackaget;
 public class RspProcess {
     FactoryPackaget f=new FactoryPackaget();
     @AllowConcurrentEvents
+    @Subscribe
 public void recRsponse(RspPackaget rsp)
 {
     //收到服务回执

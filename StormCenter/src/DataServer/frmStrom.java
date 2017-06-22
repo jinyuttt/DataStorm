@@ -23,6 +23,9 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
+
 import EventBus.MessageBus;
 import RecServer.CenterStart;
 import StromModel.LogMsg;
@@ -34,7 +37,7 @@ import java.awt.event.WindowEvent;
 *  注册中心界面
 */
 
-public class frmStrom extends JFrame {
+public class FrmStrom extends JFrame {
 
 	/**
 	 * 
@@ -63,7 +66,7 @@ public class frmStrom extends JFrame {
 					
 					//UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 					  //UIManager.getLookAndFeelDefaults().put("defaultFont", new Font("微软雅黑", Font.PLAIN, 12));
-					frmStrom frame = new frmStrom();
+					FrmStrom frame = new FrmStrom();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -75,7 +78,7 @@ public class frmStrom extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public frmStrom() {
+	public FrmStrom() {
 		setTitle("\u6570\u636E\u4E2D\u5FC3");
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -84,7 +87,7 @@ public class frmStrom extends JFrame {
 				//
 				CenterStart  start=new CenterStart();
 				start.start();
-			    MessageBus.register("LogInfo", this);
+			
 			}
 			@Override
 			public void windowActivated(WindowEvent e) {
@@ -154,18 +157,28 @@ public class frmStrom extends JFrame {
 		 textArea.setWrapStyleWord(true);  
 		panel_2.add(textArea);
 		contentPane.add(lblNewLabel, BorderLayout.SOUTH);
+		  LogFrame log=new LogFrame(this);
+          MessageBus.register("LogInfo", log);
 	}
-    public void logShow(LogMsg msg)
-    {
-        if(msg.msg.isEmpty())
-        {
-            textArea.setText(msg.toString());
-        }
-        else if(msg.objMsg==null)
-        {
-            textArea.setText(msg.msg);
-        }
-            
-   
-    }
+
+	 @Subscribe
+	    @AllowConcurrentEvents
+	   public void logShow(LogMsg msg)
+	   {
+	       if(!msg.msg.isEmpty())
+	       {
+	         textArea.setText(msg.msg);
+	       }
+	       else if(msg.objMsg!=null)
+	       {
+	          //textArea.setText(msg.objMsg);
+	       }
+	       else
+	       {
+	           textArea.setText(msg.toString());
+	       }
+	           
+	  
+	   }
+	
 }

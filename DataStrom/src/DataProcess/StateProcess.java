@@ -10,6 +10,7 @@
 package DataProcess;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
 
 import DataStrom.ServerBus;
 import StromModel.ServerModel;
@@ -32,6 +33,7 @@ import Util.ServerState;
  */
 public class StateProcess {
     @AllowConcurrentEvents
+    @Subscribe
 public void recState(ServerState state)
 {
         ServerModel server=new ServerModel();

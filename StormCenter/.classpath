@@ -9,5 +9,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/NetModel"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DataStrom"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NetSocket"/>
+	<classpathentry kind="lib" path="E:/Study/java/DataStorm/lib/guava-22.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

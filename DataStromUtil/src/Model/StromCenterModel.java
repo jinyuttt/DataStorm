@@ -16,7 +16,8 @@ import Util.ServerInfo;
  *     
  * 项目名称：DataStromUtil    
  * 类名称：StromCenterModel    
- * 类描述：    注册中心情况；同时携带服务信息
+ * 类描述：    注册中心情况；
+ * 同时携带服务信息
  * 用于各注册中心同步服务
  * 创建人：jinyu    
  * 创建时间：2017年6月15日 上午2:33:23    

@@ -52,6 +52,8 @@ public void start()
     //启动处理
     CenterTimer.startMasterThread();
     CenterTimer.startServerThread();
+    CenterTimer.startThread();
+    CenterTimer.startOutServerInfo();
     //本节点
     initLocalNode();
     

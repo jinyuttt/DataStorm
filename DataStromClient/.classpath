@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="E:/Study/java/DataStorm/lib/guava-22.0.jar"/>
 	<classpathentry kind="lib" path="E:/Study/java/DataStorm/lib/fastjson-1.2.9.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Common"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/NetProtocol"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

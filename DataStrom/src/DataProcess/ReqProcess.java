@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
 
 import Config.CenterConfig;
 import DataStrom.ServerBus;
@@ -46,6 +47,7 @@ public class ReqProcess {
     private   ConcurrentLinkedQueue<ReqPackaget> cache=new ConcurrentLinkedQueue<ReqPackaget>();
   private  ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
   private  volatile boolean isRuning=false;
+  @Subscribe
     @AllowConcurrentEvents
 public void recRequest(ReqPackaget req)
 {

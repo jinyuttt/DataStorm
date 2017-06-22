@@ -41,7 +41,7 @@ public  byte packagetType;
 public String serverName;
 
 /**
- * session id
+ * session id 只是一个标识
  */
 public long sessionid;
 

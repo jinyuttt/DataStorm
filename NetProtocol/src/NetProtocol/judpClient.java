@@ -13,12 +13,18 @@ package NetProtocol;
 
 import java.util.LinkedList;
 
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
 import CacheDataReset.CacheOrg;
+import FactoryPackaget.AckQueue;
+import FactoryPackaget.ClientAck;
 import FactoryPackaget.SubNetPackaget;
 
 import JNetSocket.UDPClient;
 import NetPackaget.PackagetRandom;
 import NetPackaget.SubPackaget;
+import RecviceData.AckPackaget;
 
 /**    
  *     
@@ -37,6 +43,8 @@ import NetPackaget.SubPackaget;
 public class judpClient {
     UDPClient client=new UDPClient();
     boolean isColse=false;
+    LinkedBlockingQueue<byte[]> recQueue=new LinkedBlockingQueue<byte[]>();
+    private int  outTime=20;
     /**
      * 发送数据
      * 
@@ -56,6 +64,7 @@ public class judpClient {
             client.sendData(sIP, sPort, sendData);
             putCache(sessionid,packagetID,sendData,sIP,sPort);
         }
+        putsendAck(sessionid,num);
     }
     }
     /*
@@ -67,8 +76,8 @@ public class judpClient {
         LinkedList<byte[]> list=SubPackaget.subData(data);
         if(list!=null)
         {
-          long sessionid=PackagetRandom.getSessionID();
-          long initseq=PackagetRandom.getSequeueID();
+           long sessionid=PackagetRandom.getSessionID();
+           long initseq=PackagetRandom.getSequeueID();
             int num=list.size();
             while(list.size()>0)
             {
@@ -76,23 +85,32 @@ public class judpClient {
                  byte[] sendData=SubNetPackaget.createNetPackaget(sessionid,initseq,packagetID,num,list.removeFirst());
                  client.bindLocal(localIP,localPort);
                  client.sendData(sIP, sPort, sendData);
-                putCache(sessionid,packagetID,sendData,sIP,sPort);
+                 putCache(sessionid,packagetID,sendData,sIP,sPort);
             }
+            putsendAck(sessionid,num);
         }
       
     }
     
     /**
      * 
-     * 保存
+     * 保存每一个包
     
      */
     private void putCache(long sessionid,long packagetid ,byte[]data,String host,int port)
     {
         String key=String.valueOf(sessionid)+String.valueOf(packagetid);
         CacheOrg.put(key, client, data, host, port);
+        ClientAck.put(this, client);
     }
-    
+    private void putsendAck(long sessionid,int num)
+    {
+        AckPackaget  p=new AckPackaget();
+        p.packagetNum=num;
+        p.sessionid=sessionid;
+        AckQueue.put(p, client);
+        
+    }
     /**
      * 逻辑上关闭
      */
@@ -114,6 +132,21 @@ public class judpClient {
      */
     public byte[]  getCallBackData()
     {
-       return client.getCallBackData();
+     try {
+        return   recQueue.poll(outTime, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+     return null;
+      
+    }
+    }
+     public void add(byte[]rec)
+             {
+              
+         try {
+            recQueue.put(rec);
+        } catch (InterruptedException e) {
+         
+            e.printStackTrace();
+        }
     }
 }

@@ -216,7 +216,10 @@ public class FactoryPackaget {
               buf.put(tmpbyte);
               tmpbyte=(byte) (tmp.isMaster==true?1:0);
               buf.put(tmpbyte);
-               data=buf.array();
+              buf.flip();
+             data=new byte[buf.limit()];
+             System.arraycopy(all, 0, data, 0, data.length);
+      
        }
        else if(packaget instanceof ServerState)
        {
@@ -291,7 +294,6 @@ public class FactoryPackaget {
 {
     IDataPackaget packaget = null;
     ByteBuffer buf=ByteBuffer.wrap(data);
-    buf.flip();
      byte  type=buf.get();
      switch(type)
      {

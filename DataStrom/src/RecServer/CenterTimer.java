@@ -11,6 +11,7 @@ package RecServer;
 
 
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import Config.CenterConfig;
 import DataStrom.ServerBus;
+import EventBus.MessageBus;
 import JNetSocket.MulticastClient;
 import JNetSocket.UDPClient;
 import Model.MasterModel;
@@ -49,8 +51,9 @@ public class CenterTimer {
     private static Thread  stateReset=null;//检查线程
     
     private static ReentrantLock lock=new ReentrantLock();
-    private static boolean isRuning;//控制线程启动
-    private static volatile boolean isMasterRuning=false;
+    private static volatile boolean isRuning;//控制线程启动
+    private static volatile boolean isMasterRuning=false;//注册中心服务同步
+    private static  volatile boolean isOutServer=false;
     private static LinkedBlockingQueue<ServerInfo> newadd=new LinkedBlockingQueue<ServerInfo>();
     private  static LinkedBlockingQueue<ConfigModel> masterVote=new LinkedBlockingQueue<ConfigModel>();
     /**
@@ -69,7 +72,7 @@ public class CenterTimer {
     {
             masterVote.offer(model);
     }
-    /*
+    /**
      * 启动线程及时发送本中心接受的新的服务信息
      * 及时更新新服务
      */
@@ -88,7 +91,6 @@ public class CenterTimer {
                               while(isRuning)
                               {
                                try {
-                                   
                                         ServerInfo tmp=newadd.take();
                                         byte[]data= f.unDataModel(tmp);
                                         client.sendData(CenterConfig.localCenter.multIP, CenterConfig.localCenter.port, data);
@@ -414,6 +416,92 @@ public class CenterTimer {
                     
                 }
 
+    /**
+     * 服务信息输出
+     * 传递给界面
+     */
+    public static void startOutServerInfo()
+    {
+        if(isOutServer)
+        {
+            return;
+        }
+        isOutServer=true;
+            Thread check=new   Thread(new Runnable()
+                    {
+                       @Override
+                       public void run() {
+                        
+                          while(isOutServer)
+                          {
+                              StringBuffer buf=new StringBuffer();
+                              //
+                             if(CenterConfig.masterCenter!=null)
+                             {
+                                 ConfigModel tmp=  CenterConfig.masterCenter;
+                                 buf.append("master注册中心标识："+tmp.flage+"#");
+                                 buf.append("master注册中心IP:"+tmp.IP+"#");
+                                 buf.append("master注册中心端口:"+tmp.port+"#");
+                                 if(tmp.action)
+                                 {
+                                    buf.append("master注册中心状态:action"+"#");
+                                 }
+                                 else
+                                 {
+                                     buf.append("master注册中心状态:unaction"+"#");
+                                 }
+                                 MessageBus.post("uimaster", buf.toString());
+                             }
+                              if(ServerBus.map.isEmpty())
+                              {
+                                  try {
+                                    TimeUnit.SECONDS.sleep(20);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                              }
+                              Iterator<Entry<String, ServerModel>> iter = ServerBus.map.entries().iterator();
+                              while(iter.hasNext())
+                              {
+                                    buf.setLength(0);
+                                    Entry<String, ServerModel> entry =iter.next();
+                                    ServerModel tmp=entry.getValue();
+                                    buf.append("服务名称："+tmp.name+"#");
+                                    buf.append("服务IP:"+tmp.IP+"#");
+                                    buf.append("服务端口:"+tmp.port+"#");
+                                    if(tmp.falge==null)
+                                    {
+                                        tmp.falge="";
+                                    }
+                                    buf.append("服务标识:"+tmp.falge+"#");
+                                    buf.append("服务状态：action"+"#");
+                                   if(tmp.isAction())
+                                   {
+                                       buf.append("服务状态：action"+"#");
+                                   }
+                                   else
+                                   {
+                                       buf.append("服务状态：unaction"+"#");
+                                       iter.remove();
+                                   }
+                                   MessageBus.post("UIServer", buf.toString());
+                              }
+                                   try {
+                                    TimeUnit.SECONDS.sleep(10);
+                                } catch (InterruptedException e) {
+                                  
+                                    e.printStackTrace();
+                                }
+                               
+                             
+                          }
+                       }
+                
+                    });
+            check.setDaemon(true);
+            check.setName("UIServer");
+            check.start();
+    }
     
         }
     

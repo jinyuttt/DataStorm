@@ -55,6 +55,8 @@ public int    multPort=4444;
 * 2 预计成为主中心
 * 3. 一般存活中心
 * 4  探寻主服务请求包
+* 5 通知对方产生的flage与自己相同，重新生成
+* 相同时比较IP大小,小的IP重新生成
 * 
 */
 public byte centerByte=0;

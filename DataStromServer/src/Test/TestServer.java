@@ -32,26 +32,7 @@ public class TestServer {
 
     /**    
        
-     * main(这里用一句话描述这个方法的作用)    
-       
-     * TODO(这里描述这个方法适用条件 – 可选)    
-       
-     * TODO(这里描述这个方法的执行流程 – 可选)    
-       
-     * TODO(这里描述这个方法的使用方法 – 可选)    
-       
-     * TODO(这里描述这个方法的注意事项 – 可选)    
-       
-     * @param   name    
-       
-     * @param  @return    设定文件    
-       
-     * @return String    DOM对象    
-       
-     * @Exception 异常对象    
-       
-     * @since  CodingExample　Ver(编码范例查看) 1.1    
-       
+
     */
     public static void main(String[] args) {
         RegisterServer reg=new RegisterServer();

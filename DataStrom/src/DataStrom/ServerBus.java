@@ -32,6 +32,9 @@ public static  HashMultimap<String, ConfigModel> center = HashMultimap.create();
 
 /**
  * 使用服务
+ * 注册中心调用服务的集合
+ * 尽量不要使用做其它事情
+ * 其余服务信息使用map集合
  * 
  */
 public static HashMap<String,StromServerNode> serverList=new HashMap<String,StromServerNode>();

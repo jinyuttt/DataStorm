@@ -9,8 +9,14 @@
  */
 package Client;
 
+import java.nio.ByteBuffer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import com.google.common.eventbus.AllowConcurrentEvents;
 
+import NetProtocol.judpClient;
+import Util.FactoryPackaget;
 import Util.IDataPackaget;
 
 /**    
@@ -27,10 +33,65 @@ import Util.IDataPackaget;
  *     
  */
 public class ListenerReq {
-    
+     ExecutorService  cachePool= Executors.newCachedThreadPool();
+     FactoryPackaget f=new FactoryPackaget();
     @AllowConcurrentEvents
 public void  listenerClient(IDataPackaget packaget)
 {
-    
+        judpClient client=new judpClient();
+        byte[] data=f.unDataModel(packaget);
+        client.sendData(ClientMaster.masterIP, ClientMaster.port, data);
+        if(ClientMaster.isBack)
+        {
+             startListern(client);
+             ClientMaster.isBack=false;
+        }
+        if(ClientMaster.random.getWeightCategory().equals("wc1"))
+        {
+            ClientMaster.isBack=true;
+        }
 }
+    
+    /**
+     * 接收回执的master地址
+     */
+ private void startListern( judpClient client)
+ {
+     cachePool.execute(new Runnable(){
+
+        @Override
+        public void run() {
+        // client..
+            byte[] data=client.getCallBackData();
+            if(data!=null&&data.length<10)
+            {
+                //放回
+                client.add(data);
+            }
+            ByteBuffer buf=ByteBuffer.wrap(data);
+            //可能是master地址；masteraddr;
+            byte[] head=new byte[10];
+            buf.get(head);
+            String strhead=new String(head);
+            if(strhead.equalsIgnoreCase("masteraddr"))
+            {
+              short len=  buf.getShort();//IP
+              byte[]ip=new byte[len];
+              buf.get(ip);
+              int masterPort= buf.getInt();
+              String masterIP=new String(ip);
+              
+              ClientMaster.masterIP=masterIP;
+              ClientMaster.port=masterPort;
+            }
+            else
+            {
+                //放回
+                client.add(data);
+            }
+              
+        }
+         
+     });
+ }
 }

@@ -10,11 +10,17 @@
 package DataProcess;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
 
 import Config.CenterConfig;
+import DataStrom.ServerBus;
 import Model.MasterModel;
+import NetModel.NetAddress;
+import NetProtocol.judpClient;
 import RecServer.CenterTimer;
+import RecServer.RandomFlage;
 import StromModel.ConfigModel;
+import Util.FactoryPackaget;
 
 
 /**    
@@ -31,9 +37,23 @@ import StromModel.ConfigModel;
  *     
  */
 public class MasterProcess {
+    @Subscribe
     @AllowConcurrentEvents
     public void recMasterAsk(MasterModel req)
     {
+        //
+        if(req.centerByte==5)
+        {
+            //有中心通知重新产生标识
+            if(!req.IP.equals(CenterConfig.localCenter.IP)||req.port!=CenterConfig.localCenter.port||!CenterConfig.localCenter.flage.equals(req.flage))
+            {
+                //说明不是通知自己的
+                return;
+            }
+            CenterConfig.localCenter.intflage=RandomFlage.getFlage();
+            CenterConfig.localCenter.flage=String.valueOf(CenterConfig.localCenter.intflage);
+            return;
+        }
         ConfigModel model=new ConfigModel();
         model.action=req.action;
         model.centerByte=req.centerByte;
@@ -71,6 +91,19 @@ public class MasterProcess {
             //心跳包，所有心跳则加入
           //  if(model.equals(CenterConfig.localCenter))
                 CenterTimer.addMaster(model);
+        }
+        //判断下注册中心标识
+        if(model.intflage==CenterConfig.localCenter.intflage&&!CenterConfig.localCenter.IP.equals(model.IP))
+        {
+            //标识相同，IP不同说明需要重新选择；
+            NetAddress netcall=ServerBus.objSocket.getByKey(String.valueOf(req.sessionid));
+            judpClient client=new judpClient();
+            MasterModel  ask=new MasterModel();
+            ask.IP=CenterConfig.localCenter.IP;
+            ask.port=CenterConfig.localCenter.port;
+            FactoryPackaget f=new FactoryPackaget();
+            byte[] data=  f.unDataModel(ask);
+            client.sendData(netcall.srcIP, netcall.srcPort, data);
         }
     }
 }

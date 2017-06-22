@@ -13,8 +13,9 @@ package RecServer;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import com.google.common.collect.Multiset;
+
 import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
 
 import DataStrom.ServerBus;
 import EventBus.MessageBus;
@@ -48,14 +49,13 @@ import Util.ServerState;
  */
 public class registerServer {
     ReentrantReadWriteLock lock=new ReentrantReadWriteLock();
+    @Subscribe
     @AllowConcurrentEvents
 public  void recviceData(DataModel data)
 {
         NetAddress addr=new NetAddress();
-    
         addr.srcIP=data.srcIP;
         addr.srcPort=data.srcPort;
-    
         FactoryPackaget factory=new FactoryPackaget();
         IDataPackaget packaget= factory.unPackaget(data.data);
         packaget.sessionid =PackagetRandom.getSequeueID();
@@ -63,7 +63,7 @@ public  void recviceData(DataModel data)
         ServerBus.objSocket.put(String.valueOf(packaget.sessionid),addr );
         processData(packaget);
 }
-    @SuppressWarnings("unchecked")
+
     private void processData(IDataPackaget packaget)
     {
         if(packaget.packagetType==0)
@@ -112,7 +112,6 @@ public  void recviceData(DataModel data)
                 String[] src=req.srcAddr.split("#");
 
                 NetAddress addr=new NetAddress();
-            
                 addr.srcIP=src[0];
                 addr.srcPort=Integer.valueOf(src[1]);
                 ServerBus.objSocket.put(String.valueOf(packaget.sessionid),addr );
@@ -142,19 +141,7 @@ public  void recviceData(DataModel data)
         }
         if(packaget.packagetType==4)
         {
-            //服务注册
-            ServerInfo tmp=(ServerInfo) packaget;
-            //
-            ServerModel model=new ServerModel();
-           model.IP=tmp.IP;
-           model.isMaster=tmp.isMaster;
-           model.master_slave=tmp.master_slave;
-           model.name=tmp.serverName;
-           model.netType=tmp.netType;
-           model.port=tmp.port;
-           Multiset<ServerModel> set=  (Multiset<ServerModel>) ServerBus.map.get(tmp.serverName);
-           set.add(model,1);
-           ServerBus.objSocket.remove(String.valueOf(tmp.sessionid));
+            //其它数据(预留)
             
         }
         if(packaget.packagetType==6)
@@ -163,7 +150,7 @@ public  void recviceData(DataModel data)
             MasterModel state=(MasterModel)packaget;
             //传给返回处理
             MessageBus.post("master", state);
-            ServerBus.objSocket.remove(String.valueOf(state.sessionid));
+            //ServerBus.objSocket.remove(String.valueOf(state.sessionid));
         }
         if(packaget.packagetType==7)
         {
@@ -171,7 +158,7 @@ public  void recviceData(DataModel data)
             StromCenterModel state=(StromCenterModel)packaget;
             //传给返回处理
             MessageBus.post("stromserverinfo", state);
-            ServerBus.objSocket.remove(String.valueOf(state.sessionid));
+           // ServerBus.objSocket.remove(String.valueOf(state.sessionid));
         }
         
         

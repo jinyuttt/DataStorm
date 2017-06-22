@@ -73,8 +73,10 @@ public class UDPServerSocket  {
                 } 
                 //从服务器返回给客户端数据  
                     String clientAddress = packet.getAddress().getHostName(); //获得客户端的IP地址  
-                    int clientPort = packet.getPort(); //获得客户端的端口号 
-                    byte[]data=packet.getData();
+                    int clientPort = packet.getPort(); //获得客户端的端口号
+                    int len=packet.getLength();
+                    byte[]data=new byte[len];
+                    System.arraycopy(buf, 0, data, 0, len);
                     DataModel  dataModel=new DataModel();
                     dataModel.data=data;
                     dataModel.netType=1;

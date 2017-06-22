@@ -54,6 +54,7 @@ private static ReferenceQueue<judpClient>  freQueue = new ReferenceQueue<judpCli
  */
 private static ConcurrentHashMap<WeakReference<judpClient>,UDPClient> listenerClient=new ConcurrentHashMap< WeakReference<judpClient>,UDPClient>();
 private  volatile static boolean isStart=true;
+private static ConcurrentHashMap<WeakReference<UDPClient>,judpClient> listenerData=new ConcurrentHashMap< WeakReference<UDPClient>,judpClient>();
 
 //保存逻辑关闭的socket;
 private static  CacheData<Long,UDPClient> closeCache=new CacheData<Long,UDPClient>(100, 60, false);
@@ -68,7 +69,9 @@ private static  CacheData<Long,UDPClient> closeCache=new CacheData<Long,UDPClien
     {
         //数据与freQueue关联监视
         WeakReference<judpClient> wr = new WeakReference<judpClient>(curClient,freQueue);
+        WeakReference<UDPClient> key=new WeakReference<UDPClient>(client);
         listenerClient.put(wr, client);
+        listenerData.put(key, curClient);
         if(isStart)
         {
             isStart=false;
@@ -84,7 +87,10 @@ private static  CacheData<Long,UDPClient> closeCache=new CacheData<Long,UDPClien
                 {
                 try
                 {
-               byte[] ack=client.getCallBackData();
+                
+                    byte[] ack=  client.getCallBackData();
+                   
+             //  byte[] ack=client.getCallBackData();
                ReturnCode code=SubNetPackaget.AnalysisNetPackaget(ack);
                if(code.isAck)
                 {
@@ -109,6 +115,12 @@ private static  CacheData<Long,UDPClient> closeCache=new CacheData<Long,UDPClien
                       model.client.sendData(model.remoteHost, model.remotePort, model.data);
                   }
                 }
+               else
+               {
+                   //数据包回来了；
+                   judpClient  cur=   listenerData.get(client);
+                   cur.add(ack);
+               }
                if(client.isClose())
                {
                    //已经逻辑关闭

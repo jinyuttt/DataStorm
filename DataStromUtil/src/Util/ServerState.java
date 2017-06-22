@@ -30,7 +30,7 @@ public class ServerState extends IDataPackaget{
     public  String  serverName;
     public  String  srcIP;
     public int srcPort;
-    public String flage;
+    public String flage;//服务的标识；
     /*
      * 是否是主从服务
      */
