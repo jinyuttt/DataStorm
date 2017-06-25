@@ -12,6 +12,8 @@ package Util;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 
+import Model.MasterModel;
+
 /**    
  *     
  * ÏîÄ¿Ãû³Æ£ºDataStromUtil    
@@ -121,6 +123,34 @@ public class FactoryPackaget {
         packaget.packagetID=pid;
         byte[] data=new byte[buf.limit()-buf.position()];
         buf.get(data);
+       return packaget;
+   }
+   private MasterModel createMasterPackaget(ByteBuffer buf,byte type)
+   {
+       MasterModel packaget=new MasterModel();
+       packaget.packagetType=type;
+       packaget.sessionid=buf.getLong();
+       //
+       short len=buf.getShort();
+        byte[] IP=new byte[len];
+        buf.get(IP);
+        packaget.IP=new String(IP);
+      //
+        packaget.port=buf.getInt();
+      //
+        short mlen=buf.getShort();
+        byte[]multIP=new byte[mlen];
+        buf.get(multIP);
+        packaget.multIP=new String(multIP);
+        packaget.multPort=buf.getInt();
+        packaget.centerByte=buf.get();
+        packaget.action=buf.get()==0?false:true;
+        //
+        int flen=buf.getInt();
+         byte[] falge=new byte[flen];
+       // byte[] data=new byte[buf.limit()-buf.position()];
+        buf.get(falge);
+        packaget.flage=new String(falge);
        return packaget;
    }
    /*
@@ -284,6 +314,41 @@ public class FactoryPackaget {
             buf.put(tmp.data);
             data=buf.array();
        }
+       else if(packaget instanceof MasterModel)
+       {
+           MasterModel tmp=(MasterModel)packaget;
+           int len=1024;
+           byte[] all=new byte[len];
+           ByteBuffer buf=ByteBuffer.wrap(all);
+           buf.put(tmp.packagetType);
+           buf.putLong(tmp.sessionid);
+           byte[]ip=tmp.IP.getBytes();
+           //
+           int iplen=ip.length;
+           buf.putShort((short) iplen);
+           buf.put(ip);
+           //
+           buf.putInt(tmp.port);
+           //
+           byte[]multIP=tmp.multIP.getBytes();
+           short mIPLen=(short)multIP.length;
+           buf.putShort(mIPLen);
+           buf.put(multIP);
+           //
+           buf.putInt(tmp.multPort);
+           //
+           buf.put(tmp.centerByte);
+           //
+           byte action=(byte) (tmp.action==true?1:0);
+           buf.put(action);
+           //
+           byte[]flagebyte=tmp.flage.getBytes();
+            buf.putInt(flagebyte.length);
+           buf.put(flagebyte);
+           buf.flip();
+           data=new byte[buf.limit()];
+           System.arraycopy(all, 0, data, 0, data.length);
+       }
        return data;
    }
 
@@ -308,6 +373,9 @@ public class FactoryPackaget {
          break;
      case 3:
          packaget=this.createRspPackaget(buf);
+         break;
+     case  6:
+         packaget=this.createMasterPackaget(buf,(byte)6);
          break;
          default:
              packaget=this.createDataPackaget(buf);

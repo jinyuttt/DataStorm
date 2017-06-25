@@ -9,6 +9,9 @@
  */
 package StromModel;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**    
  *     
  * 项目名称：DataStrom    
@@ -38,11 +41,30 @@ public  int level;
 public String msg="";
 public Object objMsg=null;
 private StringBuffer buf=null;
+private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+private Date  logDate=new Date();
+
+/**
+ * 返回日志时间
+ */
+public String getLogTime()
+{
+  return  df.format(logDate);
+}
+
+/*
+ * 添加日志信息
+ */
 public void addmsg(String msg)
 {
     buf.append(msg);
     buf.append(",");
 }
+
+/**
+ * 返回添加的日志信息
+ * 
+ */
 public String toString()
 {
  return   buf.toString();

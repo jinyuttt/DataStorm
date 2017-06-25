@@ -13,18 +13,20 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JSplitPane;
 import java.awt.GridLayout;
+import java.awt.Image;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
-
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
+import javax.swing.table.DefaultTableModel;
 
 import EventBus.MessageBus;
 import RecServer.CenterStart;
@@ -32,6 +34,8 @@ import StromModel.LogMsg;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.HashMap;
+import java.awt.FlowLayout;
 
 /**
 *  注册中心界面
@@ -47,8 +51,14 @@ public class FrmStrom extends JFrame {
 	private JPanel contentPane;
 	private final JLabel lblNewLabel = new JLabel("New label");
 	private JTable table;
-	JSplitPane splitPane;
-	JTextArea textArea;
+	private	JSplitPane splitPane;
+	private   JPanel centerLog;
+	 private    JPanel  serverLog;
+	private JTextArea textArea;
+	 private DefaultTableModel defaultTableModel = null;  
+	 private HashMap<String,Object> hahsMap=new HashMap<String,Object>();
+	 private HashMap<String,Object> hashServer=new HashMap<String,Object>();
+	 String cureentNodeKey="";
 
 	/**
 	 * Launch the application.
@@ -59,13 +69,8 @@ public class FrmStrom extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					//SubstanceBusinessBlueSteelLookAndFeel
-					//SubstanceEmeraldDuskLookAndFeel
-					  UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceEmeraldDuskLookAndFeel");
-					//UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
-					
-					//UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-					  //UIManager.getLookAndFeelDefaults().put("defaultFont", new Font("微软雅黑", Font.PLAIN, 12));
+				    UIManager.setLookAndFeel("com.jtattoo.plaf.aluminium.AluminiumLookAndFeel");
+					 // UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceEmeraldDuskLookAndFeel");
 					FrmStrom frame = new FrmStrom();
 					frame.setVisible(true);
 				} catch (Exception e) {
@@ -130,13 +135,15 @@ public class FrmStrom extends JFrame {
 		 splitPane = new JSplitPane();
 		panel.add(splitPane);
 		
-		JPanel panel_3 = new JPanel();
-		panel_3.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u5BFC\u822A\u4FE1\u606F", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		splitPane.setLeftComponent(panel_3);
+		 centerLog = new JPanel();
+		centerLog.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u5BFC\u822A\u4FE1\u606F", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		splitPane.setLeftComponent(centerLog);
+		centerLog.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		JPanel panel_4 = new JPanel();
-		panel_4.setBorder(new TitledBorder(null, "\u670D\u52A1\u72B6\u6001\u4FE1\u606F", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		splitPane.setRightComponent(panel_4);
+		  serverLog = new JPanel();
+		serverLog.setBorder(new TitledBorder(null, "\u670D\u52A1\u72B6\u6001\u4FE1\u606F", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		splitPane.setRightComponent(serverLog);
+		serverLog.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("日志信息", null, panel_1, null);
@@ -144,8 +151,9 @@ public class FrmStrom extends JFrame {
 		
 		JScrollPane scrollPane = new JScrollPane();
 		panel_1.add(scrollPane, BorderLayout.CENTER);
-		
-		table = new JTable();
+		String[] thead=new String[]{"时间","内容"}; 
+		defaultTableModel=new DefaultTableModel(null,thead);
+		table = new JTable(defaultTableModel);
 		scrollPane.setViewportView(table);
 		
 		JPanel panel_2 = new JPanel();
@@ -159,12 +167,15 @@ public class FrmStrom extends JFrame {
 		contentPane.add(lblNewLabel, BorderLayout.SOUTH);
 		  LogFrame log=new LogFrame(this);
           MessageBus.register("LogInfo", log);
+          MessageBus.register("uimaster", log);
+          MessageBus.register("UIServer", log);
 	}
 
-	 @Subscribe
-	    @AllowConcurrentEvents
-	   public void logShow(LogMsg msg)
+	
+	   public void logTXTShow(LogMsg msg)
 	   {
+	       try
+	       {
 	       if(!msg.msg.isEmpty())
 	       {
 	         textArea.setText(msg.msg);
@@ -177,8 +188,187 @@ public class FrmStrom extends JFrame {
 	       {
 	           textArea.setText(msg.toString());
 	       }
+	       }
+	       catch(Exception ex)
+	       {
 	           
-	  
+	       }
 	   }
-	
+	   public void logtable(LogMsg msg)
+	   {
+	       String msgContent="";
+	       if(!msg.msg.isEmpty())
+	       {
+	           msgContent=msg.msg;
+	       }
+	       else
+	       {
+	           msgContent=msg.toString();
+	       }
+	           
+	       if(defaultTableModel!=null)
+	       {
+	          // Vector 
+	           String[]rowData=new String[]{msg.getLogTime(),msgContent};
+	           defaultTableModel.addRow(rowData);
+	       }
+	   }
+	  public void logCenter(String IP,String port,String flage,boolean action)
+	  {
+	     //自己是否是master
+	      String key=port+IP+flage;
+	       Object lbl=   hahsMap.get(key);
+	       if(lbl==null)
+	       {
+	           //说明master变化了
+	           //
+	           centerLog.removeAll();
+	           hahsMap.clear();
+	           //<html>第一行<br>第二行</html>
+	          // String txt="标识:"+flage+"\r\n"+"IP:"+IP+"\r\n"+"端口:"+port;
+	           StringBuffer buf=new StringBuffer();
+	           buf.append("<html>");
+	           buf.append(flage);
+	           buf.append("<br>");
+	           buf.append(IP);
+	           buf.append("<br>");
+	           buf.append(port);
+	           buf.append("<html>");
+	           String txt=buf.toString();
+	           try
+	           {
+	          ImageIcon image = new ImageIcon(this.getClass().getResource("/images/master.jpg")); 
+	          image.setImage(image.getImage().getScaledInstance(30,40,Image.SCALE_DEFAULT)); 
+	          JLabel label = new JLabel(image); 
+	          label.setText(txt);
+	          label.setVerticalTextPosition(JLabel.BOTTOM);
+	          label.setHorizontalTextPosition(JLabel.CENTER);
+	          this.centerLog.add(label);
+	          hahsMap.put(key, label);
+	           }
+	           catch(Exception ex)
+	           {
+	               
+	           }
+	          //恢复当前节点
+	          if(!cureentNodeKey.isEmpty())
+	          {
+	              try
+	              {
+	              ImageIcon curimage = new ImageIcon(this.getClass().getResource("/images/serverAction.jpg")); 
+	              curimage.setImage(curimage.getImage().getScaledInstance(30,40,Image.SCALE_DEFAULT)); 
+	              JLabel curlabel = new JLabel(curimage); 
+	               curlabel.setText(cureentNodeKey);
+	               curlabel.setVerticalTextPosition(JLabel.BOTTOM);
+	               curlabel.setHorizontalTextPosition(JLabel.CENTER);
+	              this.centerLog.add(curlabel);
+	              hahsMap.put("当前节点", curlabel);
+	              }
+	              catch(Exception ex)
+	              {
+	                  
+	              }
+	          }
+	       }
+	     
+	      
+	  }
+	  public void logCureentNode(String IP,String port,String flage)
+	  {
+	      //自己的节点之间标识会改变
+	   //  String key="当前节点标识:"+flage+"\r\n"+"当前节点IP:"+IP+"当前节点端口:"+port;
+	    StringBuffer buf=new StringBuffer();
+          buf.append("<html>");
+          buf.append(flage);
+          buf.append("<br>");
+          buf.append(IP);
+          buf.append("<br>");
+          buf.append(port);
+          buf.append("<html>");
+          String key=buf.toString();
+	     if(!key.equalsIgnoreCase(cureentNodeKey))
+	     {
+	         //说明变化了
+	          Object lbl=   hahsMap.get("当前节点");
+	          if(lbl!=null)
+	          {
+	              JLabel curlabel=(JLabel) lbl;
+	              curlabel.setText(key);
+	              cureentNodeKey=key;
+	          }
+	          else
+	          {
+	              //说明还没有添加过
+	              try
+	              {
+	               ImageIcon curimage = new ImageIcon(this.getClass().getResource("/images/serverAction.jpg")); 
+                   curimage.setImage(curimage.getImage().getScaledInstance(30,40,Image.SCALE_DEFAULT)); 
+                   JLabel curlabel = new JLabel(curimage); 
+                   curlabel.setText(key);
+                   curlabel.setVerticalTextPosition(JLabel.BOTTOM);
+                   curlabel.setHorizontalTextPosition(JLabel.CENTER);
+                    centerLog.add(curlabel);
+                  cureentNodeKey=key;
+                  hahsMap.put("当前节点", curlabel);
+	              }
+	              catch(Exception ex)
+	              {
+	                  
+	              }
+	          }
+	     }
+	   
+	  }
+	  public void logServer(String name,String IP,String port,String falge,boolean isMaster,boolean action)
+	  {
+	   //   String key="服务名称:"+name+"\r\n"+"服务IP:"+IP+"\r\n"+"服务端口:"+port+"主从服务:"+isMaster;
+	      StringBuffer buf=new StringBuffer();
+          buf.append("<html>");
+          buf.append("服务名称:"+name);
+          buf.append("服务IP:"+IP);
+          buf.append("服务端口:"+port);
+          buf.append("主从服务:"+isMaster);
+          buf.append("<html>");
+          String key=buf.toString();
+	      Object lbl=   hashServer.get(key);
+	      if(lbl==null)
+	      {
+	          try
+	          {
+	          ImageIcon curimage = new ImageIcon(this.getClass().getResource("images/serverAction.png")); 
+              curimage.setImage(curimage.getImage().getScaledInstance(30,40,Image.SCALE_DEFAULT)); 
+              JLabel curlabel = new JLabel(curimage); 
+               curlabel.setText(cureentNodeKey);
+               serverLog.add(curlabel);
+	          }
+	          catch(Exception ex)
+	          {
+	              
+	          }
+	      }
+	      else
+	      {
+	          String gifname="";
+	          if(action)
+	          {
+	              gifname="images/serverAction.png";
+	          }
+	          else
+	          {
+	              gifname="images/serverUnaction.png";
+	          }
+	          //
+	          try
+	          {
+	          ImageIcon curimage = new ImageIcon(this.getClass().getResource(gifname)); 
+              curimage.setImage(curimage.getImage().getScaledInstance(30,40,Image.SCALE_DEFAULT)); 
+	          JLabel curlabel=(JLabel) lbl;
+	          curlabel.setIcon(curimage);
+	          }
+	          catch(Exception ex)
+	          {
+	              
+	          }
+	      }
+	  }
 }

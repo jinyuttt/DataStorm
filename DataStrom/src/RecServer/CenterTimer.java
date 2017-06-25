@@ -15,7 +15,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 import Config.CenterConfig;
 import DataStrom.ServerBus;
@@ -50,8 +49,7 @@ import Util.ServerInfo;
 public class CenterTimer {
     private static Thread  stateReset=null;//检查线程
     
-    private static ReentrantLock lock=new ReentrantLock();
-    private static volatile boolean isRuning;//控制线程启动
+    private static volatile boolean isRuning=true;//控制线程启动
     private static volatile boolean isMasterRuning=false;//注册中心服务同步
     private static  volatile boolean isOutServer=false;
     private static LinkedBlockingQueue<ServerInfo> newadd=new LinkedBlockingQueue<ServerInfo>();
@@ -111,7 +109,7 @@ public class CenterTimer {
             }
             finally
             {
-                lock.unlock();
+              
             }
         }
     
@@ -452,12 +450,21 @@ public class CenterTimer {
                                  }
                                  MessageBus.post("uimaster", buf.toString());
                              }
+                             if(CenterConfig.localCenter!=null)
+                             {
+                                 buf.setLength(0);
+                                 ConfigModel tmp=  CenterConfig.localCenter;
+                                 buf.append("当前节点标识："+tmp.flage+"#");
+                                 buf.append("当前节点IP:"+tmp.IP+"#");
+                                 buf.append("当前节点端口:"+tmp.port+"#");
+                                 MessageBus.post("uimaster", buf.toString());
+                             }
                               if(ServerBus.map.isEmpty())
                               {
                                   try {
                                     TimeUnit.SECONDS.sleep(20);
                                 } catch (InterruptedException e) {
-                                    e.printStackTrace();
+                                //
                                 }
                               }
                               Iterator<Entry<String, ServerModel>> iter = ServerBus.map.entries().iterator();
@@ -473,6 +480,7 @@ public class CenterTimer {
                                     {
                                         tmp.falge="";
                                     }
+                                    buf.append("服务主从:"+tmp.master_slave+"#");
                                     buf.append("服务标识:"+tmp.falge+"#");
                                     buf.append("服务状态：action"+"#");
                                    if(tmp.isAction())

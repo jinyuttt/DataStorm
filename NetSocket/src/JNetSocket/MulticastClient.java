@@ -39,12 +39,12 @@ public void sendData(String sIP,int port,byte[]data)
     }//×é²¥µØÖ·  
     MulticastSocket mss = null;  
     try {  
-        mss = new MulticastSocket(port);  
+        mss = new MulticastSocket();  
         mss.joinGroup(group);  
-           DatagramPacket dp = new DatagramPacket(data, data.length,group,port);  
-            mss.send(dp);  
+        DatagramPacket dp = new DatagramPacket(data, data.length,group,port);  
+         mss.send(dp);  
     } catch (Exception e) {  
-        e.printStackTrace();  
+       e.printStackTrace();  
     }finally{  
         try {  
             if(mss!=null){  

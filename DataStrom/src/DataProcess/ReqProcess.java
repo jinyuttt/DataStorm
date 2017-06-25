@@ -130,8 +130,6 @@ public void recRequest(ReqPackaget req)
             judpClient client=new judpClient();
            client.sendData(CenterConfig.masterCenter.IP, CenterConfig.masterCenter.port, data);
            client.close();
-           
-           
         }
         else
         {
@@ -182,7 +180,7 @@ public void recRequest(ReqPackaget req)
              {
                  if(CenterConfig.masterCenter!=null&&CenterConfig.masterCenter.action)
                  {
-                     ReqPackaget req=    cache.poll();
+                     ReqPackaget req=cache.poll();
                      byte[] data=f.unDataModel(req);
                      client.sendData(CenterConfig.masterCenter.IP, CenterConfig.masterCenter.port, data);
                  }

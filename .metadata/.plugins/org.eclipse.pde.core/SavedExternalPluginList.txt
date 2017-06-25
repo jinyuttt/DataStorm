@@ -1,4 +1,4 @@
-# List of external plug-in models previously loaded. Timestamp: 1497974110270
+# List of external plug-in models previously loaded. Timestamp: 1498371461655
 file:/C:/Users/jinyu/.p2/pool/plugins/ch.qos.logback.classic_1.0.7.v20121108-1250.jar
 file:/C:/Users/jinyu/.p2/pool/plugins/ch.qos.logback.core_1.0.7.v20121108-1250.jar
 file:/C:/Users/jinyu/.p2/pool/plugins/ch.qos.logback.slf4j_1.0.7.v201505121915.jar
@@ -800,9 +800,6 @@ file:/C:/Users/jinyu/.p2/pool/plugins/org.eclipse.ui.workbench.texteditor_3.10.1
 file:/C:/Users/jinyu/.p2/pool/plugins/org.eclipse.update.configurator_3.3.400.v20160506-0750.jar
 file:/C:/Users/jinyu/.p2/pool/plugins/org.eclipse.userstorage_1.0.1.v20170201-1648.jar
 file:/C:/Users/jinyu/.p2/pool/plugins/org.eclipse.userstorage.ui_1.0.1.v20170201-1648.jar
-file:/C:/Users/jinyu/.p2/pool/plugins/org.eclipse.visualvm.launcher.common_1.1.1/
-file:/C:/Users/jinyu/.p2/pool/plugins/org.eclipse.visualvm.launcher.java_1.1.0/
-file:/C:/Users/jinyu/.p2/pool/plugins/org.eclipse.visualvm.launcher.pde_1.1.0/
 file:/C:/Users/jinyu/.p2/pool/plugins/org.eclipse.wb.core_1.9.0.201608250402.jar
 file:/C:/Users/jinyu/.p2/pool/plugins/org.eclipse.wb.core.databinding_1.9.0.201608250402.jar
 file:/C:/Users/jinyu/.p2/pool/plugins/org.eclipse.wb.core.databinding.xml_1.9.0.201608250402.jar

@@ -2,13 +2,12 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="E:/Study/java/skin/trident-6.3.jar"/>
-	<classpathentry kind="lib" path="E:/Study/java/skin/substance-6.3.jar"/>
 	<classpathentry kind="lib" path="E:/Study/java/skin/seaglasslookandfeel-0.2.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NetModel"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DataStrom"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NetSocket"/>
 	<classpathentry kind="lib" path="E:/Study/java/DataStorm/lib/guava-22.0.jar"/>
+	<classpathentry kind="lib" path="E:/Study/java/DataStorm/lib/JTattoo-1.6.11.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

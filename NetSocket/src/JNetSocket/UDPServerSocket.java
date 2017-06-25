@@ -72,7 +72,7 @@ public class UDPServerSocket  {
                     e.printStackTrace();
                 } 
                 //从服务器返回给客户端数据  
-                    String clientAddress = packet.getAddress().getHostName(); //获得客户端的IP地址  
+                    String clientAddress = packet.getAddress().getHostAddress(); //获得客户端的IP地址  
                     int clientPort = packet.getPort(); //获得客户端的端口号
                     int len=packet.getLength();
                     byte[]data=new byte[len];
@@ -84,7 +84,14 @@ public class UDPServerSocket  {
                     dataModel.srcPort=clientPort;
                     dataModel.localPort=port;
                     dataModel.localIP=curIP;
+                    try
+                    {
                     MessageBus.post("udp", dataModel);
+                    }
+                    catch(Exception ex)
+                    {
+                        
+                    }
                 
             }
                 socket.close();//跳出循环则关闭
