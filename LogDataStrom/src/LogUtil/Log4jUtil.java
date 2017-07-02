@@ -24,7 +24,7 @@ import Tools.LogPathTool;
  *     
  * 项目名称：LogDataStrom    
  * 类名称：Log4jUtil    
- * 类描述：    
+ * 类描述：基本日志记录类
  * 创建人：jinyu    
  * 创建时间：2017年7月2日 下午2:33:05    
  * 修改人：jinyu    
