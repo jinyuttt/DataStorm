@@ -11,6 +11,7 @@ package FactoryPackaget;
 
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -81,6 +82,7 @@ private static  CacheData<Long,UDPClient> closeCache=new CacheData<Long,UDPClien
         }
         cachedThreadPool.execute(new Runnable(){
 
+            @SuppressWarnings("unlikely-arg-type")
             @Override
             public void run() {
                 while(true)
@@ -88,8 +90,7 @@ private static  CacheData<Long,UDPClient> closeCache=new CacheData<Long,UDPClien
                 try
                 {
                 
-                    byte[] ack=  client.getCallBackData();
-                   
+                    byte[] ack=  key.get().getCallBackData();
              //  byte[] ack=client.getCallBackData();
                ReturnCode code=SubNetPackaget.AnalysisNetPackaget(ack);
                if(code.isAck)
@@ -118,8 +119,13 @@ private static  CacheData<Long,UDPClient> closeCache=new CacheData<Long,UDPClien
                else
                {
                    //数据包回来了；
-                   judpClient  cur=   listenerData.get(client);
-                   cur.add(ack);
+                
+                   judpClient  cur=listenerData.get(key);
+                   //
+                   Method method = cur.getClass().getDeclaredMethod("add", byte[].class);
+                   method.setAccessible(true); //没有设置就会报错
+                   //调用该方法
+                   method.invoke(cur, ack);
                }
                if(client.isClose())
                {
@@ -168,14 +174,6 @@ private static  CacheData<Long,UDPClient> closeCache=new CacheData<Long,UDPClien
             long id=PackagetRandom.getInstanceID(this);
             closeCache.put(id, tmp);
             ackClient.remove(tmp);
-//            else
-//            {
-//                UDPClient tmp=listenerClient.remove(wr);
-//                long id=PackagetRandom.getInstanceID(this);
-//                closeCache.put(id, tmp);
-//                ackClient.remove(tmp);
-//               
-//            }
         } catch (InterruptedException e) {
         
             e.printStackTrace();

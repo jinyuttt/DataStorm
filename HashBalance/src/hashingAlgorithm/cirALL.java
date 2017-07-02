@@ -26,7 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class cirALL<K> {
 	static Random ran = new Random();
 	/** key's count */
-	private static final Integer EXE_TIMES = 100000;
+	private static final Integer EXE_TIMES = 1000;
 	
 	public static  Integer NODE_COUNT = 5;
 	

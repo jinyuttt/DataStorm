@@ -27,10 +27,13 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import EventBus.MessageBus;
 import RecServer.CenterStart;
 import StromModel.LogMsg;
+import Tools.PathTool;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -84,7 +87,7 @@ public class FrmStrom extends JFrame {
 	 * Create the frame.
 	 */
 	public FrmStrom() {
-		setTitle("\u6570\u636E\u4E2D\u5FC3");
+		setTitle("\u670D\u52A1\u6CE8\u518C\u4E2D\u5FC3");
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent e) {
@@ -92,6 +95,8 @@ public class FrmStrom extends JFrame {
 				//
 				CenterStart  start=new CenterStart();
 				start.start();
+				//
+				textArea.append("获取的路径:"+PathTool.getDirPath(this));
 			
 			}
 			@Override
@@ -155,6 +160,11 @@ public class FrmStrom extends JFrame {
 		defaultTableModel=new DefaultTableModel(null,thead);
 		table = new JTable(defaultTableModel);
 		scrollPane.setViewportView(table);
+		//
+		 TableColumnModel cm = table.getColumnModel(); 
+		 TableColumn column = cm.getColumn(0); 
+		 column.setPreferredWidth(130);  
+		 column.setMaxWidth(130);
 		
 		JPanel panel_2 = new JPanel();
 		tabbedPane.addTab("测试信息", null, panel_2, null);
@@ -162,9 +172,9 @@ public class FrmStrom extends JFrame {
 		
 		 textArea = new JTextArea();
 		 textArea.setLineWrap(true);        //激活自动换行功能 
-		 textArea.setWrapStyleWord(true);  
+		// textArea.setWrapStyleWord(true);  
 		panel_2.add(textArea);
-		contentPane.add(lblNewLabel, BorderLayout.SOUTH);
+		  contentPane.add(lblNewLabel, BorderLayout.SOUTH);
 		  LogFrame log=new LogFrame(this);
           MessageBus.register("LogInfo", log);
           MessageBus.register("uimaster", log);
@@ -174,11 +184,16 @@ public class FrmStrom extends JFrame {
 	
 	   public void logTXTShow(LogMsg msg)
 	   {
+	     int r=  textArea.getRows();
+	     if(r>50)
+	     {
+	         textArea.setText("");
+	     }
 	       try
 	       {
 	       if(!msg.msg.isEmpty())
 	       {
-	         textArea.setText(msg.msg);
+	         textArea.append(msg.msg);
 	       }
 	       else if(msg.objMsg!=null)
 	       {
@@ -186,13 +201,14 @@ public class FrmStrom extends JFrame {
 	       }
 	       else
 	       {
-	           textArea.setText(msg.toString());
+	           textArea.append(msg.toString());
 	       }
 	       }
 	       catch(Exception ex)
 	       {
 	           
 	       }
+	       textArea.append("\r\n");
 	   }
 	   public void logtable(LogMsg msg)
 	   {
@@ -205,12 +221,15 @@ public class FrmStrom extends JFrame {
 	       {
 	           msgContent=msg.toString();
 	       }
-	           
 	       if(defaultTableModel!=null)
 	       {
 	          // Vector 
 	           String[]rowData=new String[]{msg.getLogTime(),msgContent};
-	           defaultTableModel.addRow(rowData);
+	           if(defaultTableModel.getRowCount()>50)
+	           {
+	               defaultTableModel.setRowCount(0);
+	           }
+	           defaultTableModel.insertRow(0, rowData);
 	       }
 	   }
 	  public void logCenter(String IP,String port,String flage,boolean action)
@@ -237,8 +256,9 @@ public class FrmStrom extends JFrame {
 	           String txt=buf.toString();
 	           try
 	           {
-	          ImageIcon image = new ImageIcon(this.getClass().getResource("/images/master.jpg")); 
-	          image.setImage(image.getImage().getScaledInstance(30,40,Image.SCALE_DEFAULT)); 
+	               //
+	            ImageIcon image = new ImageIcon(PathTool.getDirPath(this)+"/images/master.jpg");
+	           image.setImage(image.getImage().getScaledInstance(30,40,Image.SCALE_DEFAULT)); 
 	          JLabel label = new JLabel(image); 
 	          label.setText(txt);
 	          label.setVerticalTextPosition(JLabel.BOTTOM);
@@ -255,7 +275,7 @@ public class FrmStrom extends JFrame {
 	          {
 	              try
 	              {
-	              ImageIcon curimage = new ImageIcon(this.getClass().getResource("/images/serverAction.jpg")); 
+	                  ImageIcon curimage = new ImageIcon(PathTool.getDirPath(this)+"/images/serverAction.jpg");
 	              curimage.setImage(curimage.getImage().getScaledInstance(30,40,Image.SCALE_DEFAULT)); 
 	              JLabel curlabel = new JLabel(curimage); 
 	               curlabel.setText(cureentNodeKey);
@@ -270,8 +290,6 @@ public class FrmStrom extends JFrame {
 	              }
 	          }
 	       }
-	     
-	      
 	  }
 	  public void logCureentNode(String IP,String port,String flage)
 	  {
@@ -301,10 +319,12 @@ public class FrmStrom extends JFrame {
 	              //说明还没有添加过
 	              try
 	              {
-	               ImageIcon curimage = new ImageIcon(this.getClass().getResource("/images/serverAction.jpg")); 
+	                  ImageIcon curimage = new ImageIcon(PathTool.getDirPath(this)+"/images/serverAction.jpg");
                    curimage.setImage(curimage.getImage().getScaledInstance(30,40,Image.SCALE_DEFAULT)); 
+                   curimage.setDescription("ssss");
                    JLabel curlabel = new JLabel(curimage); 
                    curlabel.setText(key);
+                   curlabel.setOpaque(false);
                    curlabel.setVerticalTextPosition(JLabel.BOTTOM);
                    curlabel.setHorizontalTextPosition(JLabel.CENTER);
                     centerLog.add(curlabel);
@@ -324,21 +344,27 @@ public class FrmStrom extends JFrame {
 	   //   String key="服务名称:"+name+"\r\n"+"服务IP:"+IP+"\r\n"+"服务端口:"+port+"主从服务:"+isMaster;
 	      StringBuffer buf=new StringBuffer();
           buf.append("<html>");
-          buf.append("服务名称:"+name);
-          buf.append("服务IP:"+IP);
-          buf.append("服务端口:"+port);
+          buf.append(name);
+          buf.append("<br>");
+          buf.append(IP);
+          buf.append("<br>");
+          buf.append(port);
+          buf.append("<br>");
           buf.append("主从服务:"+isMaster);
-          buf.append("<html>");
+          buf.append("</html>");
           String key=buf.toString();
 	      Object lbl=   hashServer.get(key);
 	      if(lbl==null)
 	      {
 	          try
 	          {
-	          ImageIcon curimage = new ImageIcon(this.getClass().getResource("images/serverAction.png")); 
+	          ImageIcon curimage = new ImageIcon(PathTool.getDirPath(this)+"/"+"images/serverAction.png");
               curimage.setImage(curimage.getImage().getScaledInstance(30,40,Image.SCALE_DEFAULT)); 
               JLabel curlabel = new JLabel(curimage); 
-               curlabel.setText(cureentNodeKey);
+               curlabel.setText(key);
+               curlabel.setVerticalTextPosition(JLabel.BOTTOM);
+               curlabel.setHorizontalTextPosition(JLabel.CENTER);
+               hashServer.put(key, curlabel);
                serverLog.add(curlabel);
 	          }
 	          catch(Exception ex)
@@ -360,7 +386,7 @@ public class FrmStrom extends JFrame {
 	          //
 	          try
 	          {
-	          ImageIcon curimage = new ImageIcon(this.getClass().getResource(gifname)); 
+	           ImageIcon curimage = new ImageIcon(PathTool.getDirPath(this)+"/"+gifname);
               curimage.setImage(curimage.getImage().getScaledInstance(30,40,Image.SCALE_DEFAULT)); 
 	          JLabel curlabel=(JLabel) lbl;
 	          curlabel.setIcon(curimage);

@@ -78,7 +78,7 @@ public static long getInstanceID(Object self)
             tmp=new   AtomicLong(0);
             atomicMap.put(self, tmp);
         }
-        lock.unlock();
+      
         }
         finally
         {
@@ -104,7 +104,6 @@ public static AtomicLong getInstanceLong(Object self)
             tmp=new   AtomicLong(0);
             atomicMap.put(self, tmp);
         }
-        lock.unlock();
         }
         finally
         {
@@ -130,7 +129,6 @@ public static void  resetInstanceLong(Object self,long id)
             tmp=new   AtomicLong(0);
             atomicMap.put(self, tmp);
         }
-        lock.unlock();
         }
         finally
         {
@@ -174,7 +172,6 @@ public static long getJVMID()
                    }
                }
            }
-           jvmLock.unlock();
         }
         finally
         {

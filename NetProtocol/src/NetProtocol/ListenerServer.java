@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import com.google.common.eventbus.AllowConcurrentEvents;
@@ -45,16 +47,17 @@ public class ListenerServer {
     private Lock locksession = new ReentrantLock();// 锁对象 
     ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
     HashSet<String> set=new  HashSet<String> ();
+    private int  outTime=20;//处理数据返回时超时接收
+  //  ConcurrentHashMap<Integer,NetDataPackaget> recDataMap=new   ConcurrentHashMap<Integer,NetDataPackaget>();
+    LinkedBlockingQueue<NetDataPackaget> recData=new   LinkedBlockingQueue<NetDataPackaget>();
     @AllowConcurrentEvents
 public void  monitorServer(DataModel monitorData)
 {
         ReturnCode returnCode=SubNetPackaget.AnalysisNetPackaget(monitorData.data);
-        String key=monitorData.srcIP+monitorData.localPort;
+        String key=monitorData.srcIP+monitorData.srcPort;
         SessionMap<Long,Session> single=hashOffer.getOrDefault(key, null);
-   
         if(single==null)
         {
-         
             lock.lock();
             try
             {
@@ -120,6 +123,9 @@ public void  monitorServer(DataModel monitorData)
         
         
 }
+    /**
+     * 检查接收完整
+     */
     private void checkRead( Session session)
     {
         cachedThreadPool.execute(new Runnable(){
@@ -134,10 +140,38 @@ public void  monitorServer(DataModel monitorData)
              netData.socket=session.socket;
              netData.srcIP=session.srcIP;
              netData.srcPort=session.srcPort;
+             //recDataMap.put(session.localPort, netData);
+             if(session.localPort==-1)
+             {
+                 try {
+                     recData.clear();
+                    recData.put(netData);
+                } catch (InterruptedException e) {
+             
+                    e.printStackTrace();
+                }
+             }
               MessageBus.post(String.valueOf(session.localPort), netData);
             }
               
           });
     }
+
+    /*
+     * 直接获取数据
+     * 单独使用此接口 port=-1
+     */
+    public NetDataPackaget getNetData(int port)
+    {
+        //NetDataPackaget data= recDataMap.remove(port);
+        try {
+            NetDataPackaget data= recData.poll(outTime, TimeUnit.SECONDS);
+              recData.clear();
+              return data;
+        } catch (InterruptedException e) {
+        }
+        return null;
+    }
+
 }
  

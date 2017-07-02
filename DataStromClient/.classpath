@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="E:/Study/java/DataStorm/lib/fastjson-1.2.9.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NetProtocol"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/NetModel"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

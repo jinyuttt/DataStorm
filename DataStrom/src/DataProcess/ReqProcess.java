@@ -18,9 +18,11 @@ import com.google.common.eventbus.Subscribe;
 
 import Config.CenterConfig;
 import DataStrom.ServerBus;
+import EventBus.MessageBus;
 import NetModel.NetAddress;
 import NetPackaget.PackagetRandom;
 import NetProtocol.judpClient;
+import StromModel.LogMsg;
 import StromModel.ServerModel;
 import Util.DataPackaget;
 import Util.FactoryPackaget;
@@ -51,7 +53,15 @@ public class ReqProcess {
     @AllowConcurrentEvents
 public void recRequest(ReqPackaget req)
 {
-     NetAddress addr= ServerBus.objSocket.getByKey(String.valueOf(req.sessionid));
+     NetAddress addr= null;
+     try
+     {
+         addr=ServerBus.objSocket.getByKey(String.valueOf(req.sessionid));
+     }
+     catch(Exception ex)
+     {
+         System.out.println("没有获取到缓存地址");
+     }
     if(CenterConfig.localCenter.centerByte==1)
     {
         //如果自己是master,则处理
@@ -78,10 +88,18 @@ public void recRequest(ReqPackaget req)
                     byte[] tmp=f.unDataModel(info);//服务信息组包
                     RspPackaget rsp=new RspPackaget();
                     rsp.result=tmp;
+                    rsp.serverName=model.name;
                     byte[]data=f.unDataModel(rsp);//回执信息组包
                     clientl.sendData(addr.srcIP, addr.srcPort, data);
                     clientl.close();
-                
+//                    LogMsg msg=new LogMsg();
+//                    msg.level=0;
+//                    msg.msg="收到客户端请求";
+                 //   MessageBus.post("LogInfo", msg);
+                    LogMsg log=new LogMsg();
+                    log.level=0;
+                    log.msg="接收到服务地址请求:"+model.name+"地址："+addr.srcIP+","+ addr.srcPort;
+                    MessageBus.getBus("LogInfo").post(log);
             }
             else
             {
@@ -97,6 +115,10 @@ public void recRequest(ReqPackaget req)
                 byte[]data=f.unDataModel(rsp);//回执信息组包
                 clientl.sendData(addr.srcIP, addr.srcPort, data);
                 clientl.close();
+                LogMsg log=new LogMsg();
+                log.level=0;
+                log.msg="没有找到服务信息，回传地址："+addr.srcIP+","+ addr.srcPort;
+                MessageBus.getBus("LogInfo").post(log);
             }
         }
         else
@@ -106,16 +128,18 @@ public void recRequest(ReqPackaget req)
             judpClient clientl=new judpClient();
             if(model!=null)
             {
-                //转换成数据
+                  //转换成数据
                     DataPackaget data=new DataPackaget();
                     data.data=req.args;
                     data.sessionid=PackagetRandom.getSequeueID();
-                   ServerBus.objSocket.remove(String.valueOf(req.sessionid));
+                   ServerBus.objSocket.remove(String.valueOf(req.sessionid));//原缓存清除
                    ServerBus.objSocket.put(String.valueOf(data.sessionid),addr);
                     byte[] tmp=f.unDataModel(data);//服务信息组包
                     clientl.sendData(model.IP, model.port, tmp);
                     clientl.close();
-                
+                    LogMsg log=new LogMsg();
+                    log.msg="传递数据到服务:"+model.name;
+                    MessageBus.getBus("LogInfo").post(log);
             }
         }
     }
@@ -125,11 +149,14 @@ public void recRequest(ReqPackaget req)
         req.srcAddr=addr.srcIP+"#"+addr.srcPort;
         if(CenterConfig.masterCenter!=null&&CenterConfig.masterCenter.action)
         {
-          
             byte[] data=f.unDataModel(req);
             judpClient client=new judpClient();
            client.sendData(CenterConfig.masterCenter.IP, CenterConfig.masterCenter.port, data);
            client.close();
+           LogMsg log=new LogMsg();
+           log.msg="转发数据给master";
+           log.level=1;
+           MessageBus.getBus("LogInfo").post(log);
         }
         else
         {

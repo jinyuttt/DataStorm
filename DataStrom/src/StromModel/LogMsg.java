@@ -32,6 +32,9 @@ public class LogMsg {
  }
 /**
  * 消息类型
+ * 0一般信息(展示在测试)
+ * 1 重要信息(同时展示在日志信息中)
+ * 2 
  */
 public  int level;
 

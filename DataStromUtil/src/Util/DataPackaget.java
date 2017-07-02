@@ -38,7 +38,7 @@ public class DataPackaget extends IDataPackaget {
     /*
      * 转发时的数据
      */
-    public  byte[] data;
+    public  byte[] data=new byte[0];
 
     /*
      * 数据包ID

@@ -1,6 +1,7 @@
 package Client;
 import EventBus.MessageBus;
 import Util.ReqPackaget;
+import Util.RspPackaget;
 
 /**    
  * 文件名：StromClient.java    
@@ -32,9 +33,24 @@ public class StromClient {
     {
         listener=new ListenerReq();
         MessageBus.getBus("clientReq").register(listener);
+        MessageBus.getBus("clientReq").register(listener);
     }
+    
+    /**
+     * 发送请求到中心
+     */
 public void  sendRequest(ReqPackaget req)
 {
     MessageBus.getBus("clientReq").post(req);
+}
+
+/*
+ * 有返回时接收返回数据
+ */
+public RspPackaget recCallData()
+{
+ return    listener.getCall();
+
+    
 }
 }

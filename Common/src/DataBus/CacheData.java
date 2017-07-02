@@ -71,12 +71,8 @@ public class CacheData<K,V> {
   */
  public V getByKey(K key)
  {
-     try {
-        return cache.get(key, null);
-    } catch (ExecutionException e) {
-        e.printStackTrace();
-      return null;
-    }
+        return cache.getIfPresent(key);
+    
  }
  /*
   * ÒÆ³ý»º´æ

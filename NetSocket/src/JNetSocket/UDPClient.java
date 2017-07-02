@@ -122,15 +122,19 @@ public void sendData(String host,int port,byte[]data)
          {
              return null;
          }
-         //接收服务器反馈数据  
+         //接收反馈数据  
          byte[] backbuf = new byte[65535];  
          DatagramPacket backPacket = new DatagramPacket(backbuf, backbuf.length);  
          try {
             socket.receive(backPacket);
         } catch (IOException e) {
             e.printStackTrace();
-        }  //接收返回数据  
-        return backPacket.getData();
+        } 
+         //
+         int len=backPacket.getLength();
+         byte[] data=new byte[len];
+         System.arraycopy(backbuf, 0, data, 0, len);
+        return  data;
    }
     
     /*

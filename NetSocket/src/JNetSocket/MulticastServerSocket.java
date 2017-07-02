@@ -47,22 +47,15 @@ public class MulticastServerSocket {
         try {
             maddr = InetAddress.getByName(addr);
         } catch (UnknownHostException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
         try {
             msr = new MulticastSocket(port);
         } catch (IOException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         } 
         try {
             msr.setReceiveBufferSize(128);
-        } catch (SocketException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        try {
             msr.setReuseAddress(true);
         } catch (SocketException e1) {
             e1.printStackTrace();

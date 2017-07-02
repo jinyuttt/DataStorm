@@ -28,6 +28,6 @@ public class RspPackaget extends IDataPackaget{
         this.packagetType=3;
     }
     public  String  serverName;
-    public  byte[] result;
+    public  byte[] result=new byte[0];
     public int packagetID;
 }

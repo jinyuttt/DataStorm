@@ -43,7 +43,8 @@ public void sendData(String sIP,int port,byte[]data)
         mss.joinGroup(group);  
         DatagramPacket dp = new DatagramPacket(data, data.length,group,port);  
          mss.send(dp);  
-    } catch (Exception e) {  
+    } catch (Exception e) { 
+        System.out.println("host:"+sIP+"port:"+port);
        e.printStackTrace();  
     }finally{  
         try {  

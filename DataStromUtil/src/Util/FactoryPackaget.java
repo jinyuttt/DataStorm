@@ -13,6 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 
 import Model.MasterModel;
+import Model.StromCenterModel;
 
 /**    
  *     
@@ -32,6 +33,7 @@ public class FactoryPackaget {
    {
        ReqPackaget packaget=new ReqPackaget();
        packaget.packagetType=2;
+       packaget.sessionid=buf.getLong();
        packaget.packagetID=buf.getInt();
        packaget.reqType=buf.get();
        short len=buf.getShort();
@@ -47,6 +49,7 @@ public class FactoryPackaget {
    {
        RspPackaget packaget=new RspPackaget();
        packaget.packagetType=3;
+       packaget.sessionid=buf.getLong();
        packaget.packagetID=buf.getInt();
        short len=buf.getShort();
         byte[] name=new byte[len];
@@ -153,6 +156,22 @@ public class FactoryPackaget {
         packaget.flage=new String(falge);
        return packaget;
    }
+   private StromCenterModel createStromCenterPackaget(ByteBuffer buf)
+   {
+       StromCenterModel packaget=new StromCenterModel();
+       packaget.packagetType=7;
+       packaget.sessionid=buf.getLong();
+       //
+       short len=buf.getShort();
+        byte[] flage=new byte[len];
+        buf.get(flage);
+        packaget.centerFlage=new String(flage);
+      //
+        byte[] data=new byte[buf.limit()-buf.position()];
+        buf.get(data);
+        packaget.info=(ServerInfo)unPackaget(data);
+       return packaget;
+   }
    /*
     * ×é°ü
     */
@@ -186,7 +205,9 @@ public class FactoryPackaget {
            buf.putShort((short)name.length);
            buf.put(name);
            buf.put(tmp.args);
-           data=buf.array();
+           buf.flip();
+           data=new byte[buf.limit()];
+           System.arraycopy(all, 0, data, 0, data.length);
        }
        else if(packaget instanceof RspPackaget)
        {
@@ -211,7 +232,9 @@ public class FactoryPackaget {
            buf.putShort((short)name.length);
            buf.put(name);
            buf.put(tmp.result);
-           data=buf.array();
+           buf.flip();
+           data=new byte[buf.limit()];
+           System.arraycopy(all, 0, data, 0, data.length);
        }
        else if(packaget instanceof ServerInfo)
        {
@@ -289,7 +312,8 @@ public class FactoryPackaget {
                  buf.put(flage); 
                  //
              
-                data=buf.array();
+                 data=new byte[buf.limit()];
+                 System.arraycopy(all, 0, data, 0, data.length);
        }
        else if(packaget instanceof DataPackaget)
        {
@@ -312,7 +336,8 @@ public class FactoryPackaget {
           buf.putInt(tmp.packagetID);
              //
             buf.put(tmp.data);
-            data=buf.array();
+            data=new byte[buf.limit()];
+            System.arraycopy(all, 0, data, 0, data.length);
        }
        else if(packaget instanceof MasterModel)
        {
@@ -349,6 +374,29 @@ public class FactoryPackaget {
            data=new byte[buf.limit()];
            System.arraycopy(all, 0, data, 0, data.length);
        }
+       else if(packaget instanceof StromCenterModel)
+       {
+           StromCenterModel tmp=(StromCenterModel)packaget;
+           int len=1024;
+           byte[] all=new byte[len];
+           ByteBuffer buf=ByteBuffer.wrap(all);
+           buf.put(tmp.packagetType);
+           buf.putLong(tmp.sessionid);
+           
+           byte[]flage=tmp.centerFlage.getBytes();
+           //
+           int flagelen=flage.length;
+           buf.putShort((short) flagelen);
+           buf.put(flage);
+           //
+          byte[] server=this.unDataModel(tmp.info);
+          buf.put(server);
+           //
+        
+           buf.flip();
+           data=new byte[buf.limit()];
+           System.arraycopy(all, 0, data, 0, data.length);
+       }
        return data;
    }
 
@@ -357,6 +405,10 @@ public class FactoryPackaget {
     */
    public IDataPackaget unPackaget(byte[]data)
 {
+       if(data==null||data.length==0)
+       {
+           return null;
+       }
     IDataPackaget packaget = null;
     ByteBuffer buf=ByteBuffer.wrap(data);
      byte  type=buf.get();
@@ -376,6 +428,9 @@ public class FactoryPackaget {
          break;
      case  6:
          packaget=this.createMasterPackaget(buf,(byte)6);
+         break;
+     case 7:
+         packaget=this.createStromCenterPackaget(buf);
          break;
          default:
              packaget=this.createDataPackaget(buf);

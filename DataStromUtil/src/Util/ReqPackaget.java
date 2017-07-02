@@ -27,8 +27,8 @@ public class ReqPackaget  extends IDataPackaget{
     {
         this.packagetType=2;
     }
-public  String  serverName;
-/*
+
+/**
  * 0 由中心转服务
  * 1 获取服务地址
  */
@@ -37,7 +37,7 @@ public  byte  reqType;
 /*
  * 转发时的数据
  */
-public  byte[] args;
+public  byte[] args=new byte[0];
 
 /*
  * 数据包ID

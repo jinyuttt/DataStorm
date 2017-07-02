@@ -101,6 +101,7 @@ public byte[] read()
                 byte[]data=currentChunk.data;
                 list.add(data);
                 len+=data.length;
+                currentChunk=null;
                 updateCurrentChunk(true);
             }
            if(buffer.isEmpty())
@@ -133,15 +134,16 @@ private void updateCurrentChunk(boolean block)
                     currentChunk=buffer.poll(1000, TimeUnit.MILLISECONDS);
                     if(currentChunk==null)
                     {
-                        //可能丢包了
-                        UDPClient client=new UDPClient();
-                        AckPackaget ack=new AckPackaget();
-                        ack.packagetID=buffer.waitSequenceNumber();
-                        ack.sessionid=this.id;
-                        ack.ackType=2;
-                        byte[]data= SubNetPackaget.createAckPackaget(ack);
-                        client.sendData(this.srcIP, this.srcPort, data);
                         break;
+//                        //可能丢包了
+//                        UDPClient client=new UDPClient();
+//                        AckPackaget ack=new AckPackaget();
+//                        ack.packagetID=buffer.waitSequenceNumber();
+//                        ack.sessionid=this.id;
+//                        ack.ackType=2;
+//                        byte[]data= SubNetPackaget.createAckPackaget(ack);
+//                        client.sendData(this.srcIP, this.srcPort, data);
+//                        break;
                         
                     }
                 }

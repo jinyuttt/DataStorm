@@ -37,31 +37,20 @@ public class LogFrame {
     @AllowConcurrentEvents
    public void logShow(LogMsg msg)
    {
-//        if(msg.msg!=null)
-//        {
-//            String[] all=msg.msg.split("#");
-//            if(msg.msg.startsWith("master"))
-//            {
-//              frmui.logCenter(all[1], all[2], all[0], Boolean.valueOf(all[3]));
-//            }   
-//            else if(msg.msg.startsWith("master"))
-//            {
-//             frmui.logCureentNode(all[1], all[2], all[0]);
-//            }
-//            else
-//            {
-//                frmui.logServer(all[0], all[1], all[2], all[4], Boolean.valueOf(all[3]), Boolean.valueOf(all[5]));
-//                
-//            }
-    //    }
-        
+
+       //处理日志信息
         frmui.logTXTShow(msg);
+        if(msg.level!=0)
+        {
+            frmui.logtable(msg);
+        }
            
    }
     @Subscribe
     @AllowConcurrentEvents
    public void logMsgShow(String msg)
    {
+        //功能信息（特定)
         if(msg!=null)
         {
             String[] all=msg.split("#");

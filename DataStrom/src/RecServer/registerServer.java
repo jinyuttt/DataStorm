@@ -19,6 +19,8 @@ import com.google.common.eventbus.Subscribe;
 
 import DataStrom.ServerBus;
 import EventBus.MessageBus;
+import FactoryPackaget.ReturnCode;
+import FactoryPackaget.SubNetPackaget;
 import Model.MasterModel;
 import Model.StromCenterModel;
 import NetModel.DataModel;
@@ -57,7 +59,8 @@ public  void recviceData(DataModel data)
         addr.srcIP=data.srcIP;
         addr.srcPort=data.srcPort;
         FactoryPackaget factory=new FactoryPackaget();
-        IDataPackaget packaget= factory.unPackaget(data.data);
+        ReturnCode r=SubNetPackaget.AnalysisNetPackaget(data.data);
+        IDataPackaget packaget= factory.unPackaget(r.data);//需要的是真实数据
         packaget.sessionid =PackagetRandom.getSequeueID();
         //
         ServerBus.objSocket.put(String.valueOf(packaget.sessionid),addr );
@@ -114,13 +117,14 @@ public  void recviceData(DataModel data)
                 NetAddress addr=new NetAddress();
                 addr.srcIP=src[0];
                 addr.srcPort=Integer.valueOf(src[1]);
+                //替换直接来源
                 ServerBus.objSocket.put(String.valueOf(packaget.sessionid),addr );
             }
             //传给请求处理
             MessageBus.post("req", req);
             LogMsg msg=new LogMsg();
             msg.level=0;
-           msg.msg="收到客户端请求";
+            msg.msg="收到客户端请求";
             MessageBus.post("LogInfo", msg);
             
         }

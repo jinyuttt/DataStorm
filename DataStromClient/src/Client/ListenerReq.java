@@ -9,15 +9,20 @@
  */
 package Client;
 
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
 
 import NetProtocol.judpClient;
 import Util.FactoryPackaget;
 import Util.IDataPackaget;
+import Util.ReqPackaget;
+import Util.RspPackaget;
 
 /**    
  *     
@@ -35,6 +40,8 @@ import Util.IDataPackaget;
 public class ListenerReq {
      ExecutorService  cachePool= Executors.newCachedThreadPool();
      FactoryPackaget f=new FactoryPackaget();
+     LinkedBlockingQueue<RspPackaget> data=new LinkedBlockingQueue<RspPackaget>();
+     @Subscribe
     @AllowConcurrentEvents
 public void  listenerClient(IDataPackaget packaget)
 {
@@ -50,6 +57,47 @@ public void  listenerClient(IDataPackaget packaget)
         {
             ClientMaster.isBack=true;
         }
+        if(packaget.packagetType==2)
+        {
+            ReqPackaget req=(ReqPackaget)packaget;
+            if(req.reqType==1)
+            {
+                waitCallData(client);
+            }
+        }
+}
+    /*
+     * 等待数据返回
+     */
+private void  waitCallData(judpClient client)
+{
+     byte[]callData=client.getCallBackData();//直接接收的数据，带封装；
+     if(callData!=null)
+     {
+     IDataPackaget packaget= f.unPackaget(callData);
+     RspPackaget resp=(RspPackaget)packaget;
+     data.clear();
+     data.offer(resp);
+     }
+     else
+     {
+         RspPackaget resp=new RspPackaget();
+         resp.serverName="";
+         data.clear();
+         data.offer(resp);
+     }
+}
+
+/**
+ * 返回数据
+ */
+public  RspPackaget  getCall()
+{
+    try {
+        return data.take();
+    } catch (InterruptedException e) {
+      return null;
+    }
 }
     
     /**
@@ -66,8 +114,37 @@ public void  listenerClient(IDataPackaget packaget)
             if(data!=null&&data.length<10)
             {
                 //放回
-                client.add(data);
+                try
+                {
+                Method method = client.getClass().getDeclaredMethod("add", byte[].class);
+                method.setAccessible(true); //没有设置就会报错
+                //调用该方法
+                method.invoke(client, data);
+                }
+                catch(Exception ex)
+                {
+                    
+                }
+               
             }
+            else
+            {
+               if(data==null)
+               {
+                   //放回
+                   try
+                   {
+                   Method method = client.getClass().getDeclaredMethod("add", byte[].class);
+                   method.setAccessible(true); //没有设置就会报错
+                   //调用该方法
+                   method.invoke(client, data);
+                   }
+                   catch(Exception ex)
+                   {
+                       
+                   }
+                   return;
+               }
             ByteBuffer buf=ByteBuffer.wrap(data);
             //可能是master地址；masteraddr;
             byte[] head=new byte[10];
@@ -87,7 +164,19 @@ public void  listenerClient(IDataPackaget packaget)
             else
             {
                 //放回
-                client.add(data);
+                try
+                {
+                Method method = client.getClass().getDeclaredMethod("add", byte[].class);
+                method.setAccessible(true); //没有设置就会报错
+                //调用该方法
+                method.invoke(client, data);
+                }
+                catch(Exception ex)
+                {
+                    
+                }
+               // client.add(data);
+            }
             }
               
         }

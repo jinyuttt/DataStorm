@@ -156,7 +156,7 @@ public class CenterTimer {
                                              tmp.info.serverName=s.name;
                                              tmp.info.sessionid=0;
                                              byte[]data= f.unDataModel(tmp);
-                                             client.sendData(CenterConfig.localCenter.multIP, CenterConfig.localCenter.port, data); 
+                                             client.sendData(CenterConfig.localCenter.multIP, CenterConfig.localCenter.multPort, data); 
                                          }
                                         
                                       }

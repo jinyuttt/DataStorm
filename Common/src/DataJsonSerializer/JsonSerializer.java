@@ -33,7 +33,9 @@ public  static byte[] serializerObject(Object obj)
     }
     else
     {
-       return   JSON.toJSONBytes(obj, null);
+        byte[] data=JSON.toJSONBytes(obj, null);
+        return data;
+       //return   JSON.toJSONBytes(obj, null);
     }
 }
 public static Object  reserializerObject(byte[]obj)

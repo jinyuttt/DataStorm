@@ -13,15 +13,15 @@ package NetProtocol;
 
 import java.util.LinkedList;
 
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import CacheDataReset.CacheOrg;
 import FactoryPackaget.AckQueue;
 import FactoryPackaget.ClientAck;
+import FactoryPackaget.NetDataPackaget;
 import FactoryPackaget.SubNetPackaget;
 
 import JNetSocket.UDPClient;
+import NetModel.DataModel;
 import NetPackaget.PackagetRandom;
 import NetPackaget.SubPackaget;
 import RecviceData.AckPackaget;
@@ -43,8 +43,8 @@ import RecviceData.AckPackaget;
 public class judpClient {
     UDPClient client=new UDPClient();
     boolean isColse=false;
-    LinkedBlockingQueue<byte[]> recQueue=new LinkedBlockingQueue<byte[]>();
-    private int  outTime=20;
+    ListenerServer recCall=new ListenerServer();
+  
     /**
      * 发送数据
      * 
@@ -61,7 +61,10 @@ public class judpClient {
         {
              long packagetID=PackagetRandom.getInstanceID(this);
              byte[] sendData=SubNetPackaget.createNetPackaget(sessionid,initseq,packagetID,num,list.removeFirst());
-            client.sendData(sIP, sPort, sendData);
+             //
+           byte[]  netData=   SubNetPackaget.createNetData(sendData);
+             
+            client.sendData(sIP, sPort, netData);
             putCache(sessionid,packagetID,sendData,sIP,sPort);
         }
         putsendAck(sessionid,num);
@@ -84,7 +87,8 @@ public class judpClient {
                  long packagetID=PackagetRandom.getInstanceID(this);
                  byte[] sendData=SubNetPackaget.createNetPackaget(sessionid,initseq,packagetID,num,list.removeFirst());
                  client.bindLocal(localIP,localPort);
-                 client.sendData(sIP, sPort, sendData);
+                 byte[]  netData=   SubNetPackaget.createNetData(sendData);
+                 client.sendData(sIP, sPort, netData);
                  putCache(sessionid,packagetID,sendData,sIP,sPort);
             }
             putsendAck(sessionid,num);
@@ -132,21 +136,28 @@ public class judpClient {
      */
     public byte[]  getCallBackData()
     {
-     try {
-        return   recQueue.poll(outTime, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-     return null;
-      
+          NetDataPackaget   data=  recCall.getNetData(-1);
+           if(data!=null)
+           {
+               return data.netPackaget;
+           }
+           else
+           {
+               return null;
+           }
     }
-    }
-     public void add(byte[]rec)
+  @SuppressWarnings("unused")
+    private void add(byte[]rec)
              {
-              
-         try {
-            recQueue.put(rec);
-        } catch (InterruptedException e) {
-         
-            e.printStackTrace();
-        }
+             //通过该类发送的数据都经过打包
+             //返回的数据必须重新解包
+             //由于启用了ack接收，所以直接传回即可
+             DataModel monitorData=new DataModel();
+             monitorData.data=rec;
+             monitorData.localIP="host";
+             monitorData.localPort=-1;
+             monitorData.srcIP="host";
+             monitorData.srcPort=-1;
+            recCall.monitorServer(monitorData);
     }
 }

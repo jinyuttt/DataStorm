@@ -70,6 +70,10 @@ public class ReceiveBuffer {
             }
             int insert=(int) (seq% size);//计算存储顺序位置
             buffer[insert]=data;//保存数据
+            if(numValidChunks.get()<0)
+            {
+                numValidChunks.set(0);
+            }
             numValidChunks.incrementAndGet();//存储增长
             notEmpty.signal();//唤醒读取
             return true;
@@ -121,13 +125,14 @@ public class ReceiveBuffer {
         }
         AppData r=buffer[readPosition];
         if(r!=null){
-            long thisSeq=r.getSequenceNumber();
-            if(1==thisSeq-highestReadSequenceNumber){
-                //如果相差1则说明可以读取下一个
-                increment();
-                highestReadSequenceNumber=thisSeq;
-            }
-            else return null;
+            increment();
+           // long thisSeq=r.getSequenceNumber();
+//            if(thisSeq<=highestReadSequenceNumber){
+//                //如果相差1则说明可以读取下一个
+//                increment();
+//                highestReadSequenceNumber=thisSeq;
+//            }
+//            else return null;
         }
         return r;
     }

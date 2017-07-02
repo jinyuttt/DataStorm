@@ -10,6 +10,7 @@
 package FactoryPackaget;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import RecviceData.AckPackaget;
 
@@ -27,7 +28,7 @@ import RecviceData.AckPackaget;
  *     
  */
 public class SubNetPackaget {
-    
+    private  final static byte[] myFlage="judp".getBytes();
     /*
      * 创建网络发送包
      */
@@ -37,7 +38,7 @@ public static byte[] createNetPackaget(long sessionid,long initseq,long packaget
     {
         return null;
     }
-    byte[] bytes=new byte[16+data.length+1];//一个字节类型包
+    byte[] bytes=new byte[28+data.length+1];//一个字节类型包
     ByteBuffer buf=ByteBuffer.wrap(bytes);
     buf.put((byte) 0);
     buf.putLong(sessionid);
@@ -45,7 +46,7 @@ public static byte[] createNetPackaget(long sessionid,long initseq,long packaget
     buf.putInt(packagetNum);
     buf.putLong(packagetid);
     buf.put(data);
-  return  buf.array();
+    return  buf.array();
 }
 
 /**
@@ -83,6 +84,27 @@ public static byte[] createAckPackaget(AckPackaget ack)
 public static ReturnCode  AnalysisNetPackaget(byte[]netdata)
 {
     ReturnCode code=new ReturnCode();
+    if(netdata==null)
+    {
+        return code;
+    }
+    if(netdata.length>=myFlage.length)
+    {
+        byte[] head=new byte[myFlage.length];
+        System.arraycopy(netdata, 0, head, 0, head.length);
+        if(Arrays.equals(myFlage, head))
+        {
+            byte[] tmp=new byte[netdata.length-head.length];
+            System.arraycopy(netdata, head.length, tmp, 0,tmp.length);//去除标记，只要数据
+            netdata=tmp;
+        }
+        else
+        {
+            code.data=netdata;
+            return code;
+        }
+        
+    }
     try
     {
     ByteBuffer buf=ByteBuffer.wrap(netdata);
@@ -93,7 +115,7 @@ public static ReturnCode  AnalysisNetPackaget(byte[]netdata)
     long initseq=buf.getLong();
     int  num=buf.getInt();
     long packagetid=buf.getLong();
-    byte[] data=new byte[netdata.length-20];
+    byte[] data=new byte[netdata.length-28-1];
     buf.get(data);
     code.data=data;
     code.InitSeq=initseq;
@@ -118,6 +140,7 @@ public static ReturnCode  AnalysisNetPackaget(byte[]netdata)
             ack.packagetID=buf.getLong();
         }
         code.isAck=true;
+        code.ackPackaget=ack;
     }
     }
     catch(Exception ex)
@@ -127,4 +150,19 @@ public static ReturnCode  AnalysisNetPackaget(byte[]netdata)
     return code;
     
 }
+
+/**
+ * 封装端标记
+ * 由于使用封装接口已经打包sessionid;
+ * 与直接接收的数据差别；
+ * 打上标记方便接收端解析数据
+ */
+public static byte[] createNetData(byte[]sendData)
+{
+    byte[] netData=new byte[myFlage.length+sendData.length];
+    System.arraycopy(myFlage, 0, netData, 0, myFlage.length);
+    System.arraycopy(sendData, 0, netData, myFlage.length, sendData.length);
+    return netData;
+}
+
 }
