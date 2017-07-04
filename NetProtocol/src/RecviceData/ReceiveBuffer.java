@@ -45,10 +45,13 @@ public class ReceiveBuffer {
 
     //the size of the buffer
     private final int size;
+
+    private long initialSequenceNumber=0;
+    //private long highestReadSequenceNumber=0;
     public ReceiveBuffer(int size, long initialSequenceNumber){
         this.size=size;
         this.buffer=new AppData[size];
-      //  this.initialSequenceNumber=initialSequenceNumber;
+        this.initialSequenceNumber=initialSequenceNumber;
         lock=new ReentrantLock(false);
         notEmpty=lock.newCondition();
         highestReadSequenceNumber=-1;
@@ -66,7 +69,7 @@ public class ReceiveBuffer {
             if(highestReadSequenceNumber<seq)
             {
                 //保存当前来的最大seq
-                highestReadSequenceNumber=seq;
+               // highestReadSequenceNumber=seq;
             }
             int insert=(int) (seq% size);//计算存储顺序位置
             buffer[insert]=data;//保存数据
@@ -102,9 +105,9 @@ public class ReceiveBuffer {
                     return poll();
                 }
                 if (nanos <= 0)
-                    return null;//等待完时间还是没有数据
+                    return null;//不等待
                 try {
-                    //没有数据时等待
+                    //没有数据时等待.等待唤醒
                     nanos = notEmpty.awaitNanos(nanos);
                 } catch (InterruptedException ie) {
                     notEmpty.signal(); // 
@@ -125,14 +128,9 @@ public class ReceiveBuffer {
         }
         AppData r=buffer[readPosition];
         if(r!=null){
+            //充值当前值，准备读取下一个
+            highestReadSequenceNumber=r.sequenceNumber;//读取的序列
             increment();
-           // long thisSeq=r.getSequenceNumber();
-//            if(thisSeq<=highestReadSequenceNumber){
-//                //如果相差1则说明可以读取下一个
-//                increment();
-//                highestReadSequenceNumber=thisSeq;
-//            }
-//            else return null;
         }
         return r;
     }
@@ -158,7 +156,7 @@ public class ReceiveBuffer {
      * 数据是否已经读取完成
      */
     public boolean isEmpty(){
-        if(numValidChunks.get()==0&&highestReadSequenceNumber!=-1)
+        if(numValidChunks.get()==0&&highestReadSequenceNumber!=-1&&readPosition+1==size)
         {
             return true;
         }
@@ -170,11 +168,26 @@ public class ReceiveBuffer {
     }
     
     /**
-     * 获取下一个读取seq
+     * 获取该读取seq
      */
    public long waitSequenceNumber()
    {
        //获取下一个seq,可能丢包
-       return highestReadSequenceNumber+1;
+       if(readPosition==0)
+       {
+           //第一个都没有读取到；返回初始化seq
+           return initialSequenceNumber;
+       }
+       else
+       {
+           return    highestReadSequenceNumber+1;
+       }
+   }
+   public void clear()
+   {
+       for(int i=0;i<size;i++)
+       {
+           buffer[i]=null;
+       }
    }
 }

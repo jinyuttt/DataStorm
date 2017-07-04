@@ -82,7 +82,7 @@ private static  CacheData<Long,UDPClient> closeCache=new CacheData<Long,UDPClien
         }
         cachedThreadPool.execute(new Runnable(){
 
-            @SuppressWarnings("unlikely-arg-type")
+          
             @Override
             public void run() {
                 while(true)

@@ -9,7 +9,7 @@
  */
 package JNetSocket;
 
-import java.io.IOException;
+
 
 /**    
  *     
