@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Move element &apos;RecviceBuffer.java&apos; to &apos;DataStromUtil/src/RecviceData&apos;&#x0D;&#x0A;- Original project: &apos;DataStromUtil&apos;&#x0D;&#x0A;- Destination element: &apos;DataStromUtil/src/RecviceData&apos;&#x0D;&#x0A;- Original element: &apos;Util.RecviceBuffer.java&apos;&#x0D;&#x0A;- Update references to refactored element" description="Move compilation unit" destination="/src&lt;RecviceData" element1="/src&lt;Util{RecviceBuffer.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.move" patterns="*" policy="org.eclipse.jdt.ui.moveResources" qualified="false" references="true" stamp="1497064337483" units="1" version="1.0"/>
-</session>

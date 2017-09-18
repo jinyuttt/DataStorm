@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>DataStrom监视器</title>
+	<link rel="stylesheet" type="text/css" href="themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="css/demo.css">
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+	<script src="js/Chart.js"></script>
+    <script src="js/Chart.min.js"></script>
+	<script src="js/myvalue.js"></script>
+	<script src="js/myjquery.js"></script>
+<script>
+			
+			var data = {
+				labels : ["January","February","March","April","May","June","July"],
+				datasets : [
+					{
+						lineItemName : "test1",
+						fillColor : "rgba(220,220,220,0.5)",
+						strokeColor : "rgba(220,220,220,1)",
+						pointColor : "rgba(220,220,220,1)",
+						pointStrokeColor : "#fff",
+						data : [65,59,90,81,56,55,40]
+					},
+					{
+						lineItemName : "test2",
+						fillColor : "rgba(151,187,205,0.5)",
+						strokeColor : "rgba(151,187,205,1)",
+						pointColor : "rgba(151,187,205,1)",
+						pointStrokeColor : "#fff",
+						data : [28,48,40,19,96,27,100]
+					}
+				]
+			};
+			
+			
+			var chartLine = null;
+			window.onload = function(){				
+				var ctx = document.getElementById("myChart").getContext("2d");
+				chartLine = new Chart(ctx).Line(data);
+				
+				initEvent(chartLine, clickCall);
+			}
+			
+			function clickCall(evt) {
+				var point = chartLine.getPointSingleAtEvent(evt);
+				
+				if ( point !== null )
+					alert( point.label + ": " + point.lineItemName + " ____ " + point.value);
+			}
+			
+			function initEvent(chart, handler) {
+				var method = handler;
+				var eventType = "click";
+				var node = chart.chart.canvas;
+								
+				if (node.addEventListener) {
+					node.addEventListener(eventType, method);
+				} else if (node.attachEvent) {
+					node.attachEvent("on" + eventType, method);
+				} else {
+					node["on" + eventType] = method;
+				}
+			}
+		</script>
+</head>
+<body class="easyui-layout">
+
+	<div data-options="region:'north',border:false" style="height:60px;background:#B3DFDA;padding:10px">
+	<div style="padding:10px">
+	<div style="padding:5px 0;">
+		<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="width:80px">查找</a>
+		<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-print'" style="width:80px"  onclick="preview(1)">监视打印</a>
+		<a href="javascript:location.reload();" class="easyui-linkbutton" data-options="iconCls:'icon-reload'" style="width:80px">页面刷新</a>
+		<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-help'" style="width:80px" onclick="$('#win').window('open')">帮助文档</a>
+	</div>
+    </div>
+	</div>
+	<!--startprint1-->
+	<div data-options="region:'west',split:true,title:'导航'" style="width:220px;padding:5px;">
+	<div class="easyui-accordion" style="width:200px;">
+		<div title="资源监视" data-options="iconCls:'icon-ok'" style="overflow:auto;padding:10px;">
+			<h3 style="color:#0099FF;">曲线</h3>
+			<p>图像展示</p>
+		</div>
+		<div title="数据展示" data-options="iconCls:'icon-help'" style="padding:10px;">
+			<h3 style="color:#0099FF;">MQ信息</h3>
+<h3 style="color:#0099FF;">Topic信息</h3>
+<h3 style="color:#0099FF;">RPC信息</h3>			
+		</div>
+    </div>
+	</div>
+	<div data-options="region:'east',split:true,collapsed:true,title:'简介'" style="width:230px;padding:10px;">
+	<div id="p" class="easyui-panel"  style="padding:10px;" fit="true">
+		<p style="font-size:14px">DataStrom框架介绍</p>
+		<ul>
+			<li>DataStrom包括MQ,Topic,Rpc三部分</li>
+			<div>MQ是消息队列，分发给MQ的消费者</div>
+		    <div>topic订阅发布模式，与MQ不同的是会分发给每个订阅者而MQ是轮询给每个消费者</div>
+			<div>RPC是远程服务调用，分为2种模式，一种是远程服务接口调用，一种是名称调用</div>
+	   <div>详细信息参见帮助</div>
+		</ul>
+	</div>
+	</div>
+	<div data-options="region:'south',border:false" style="height:50px;background:#A9FACD;padding:10px;">
+	 <div  style="text-align:center"  >
+	 DataStrom框架 author:jason  四川成都 2017.9  QQ群：158351344</div>
+　　<div id="startTime" style="position:absolute;right:0px;bottom:0px;width:180px;border:1px solid #aaa">关闭</div>
+</div>
+	
+	<div data-options="region:'center',title:'资源信息'" >
+	<div class="easyui-tabs"  id="tabsMain" fit="true">
+	<div title="服务器资源" style="padding:10px;">
+		<div id="pp" style="width:800px;height:500px;">
+	       <canvas id="myChart" width="400" height="400"></canvas>
+         </div>
+	</div>
+	<div title="MQ信息" closable="true" style="padding:10px 5px;">
+		<table class="easyui-datagrid" title="MQ消费者" 
+			data-options="
+				rownumbers: true,
+				singleSelect: true,
+				iconCls: 'icon-save',
+				url: 'JSONDATA/MQ.json',
+				method: 'get',
+				onLoadSuccess: onLoadSuccess,
+				rowStyler: function(index,row){
+					if (row.listprice < 30){
+						return 'background-color:#6293BB;color:#fff;font-weight:bold;';
+					}
+				}
+			">
+		<thead>
+			<tr>
+			    
+				<th data-options="field:'MQINFO',width:100">MQ名称</th>
+				<th data-options="field:'MQConsumer',width:100">MQ消费者</th>
+				<th data-options="field:'MQTime',width:100,align:'right'">订阅时间</th>
+				
+			</tr>
+		</thead>
+	</table>
+	</div>
+	<div title="Topic信息" closable="true" style="padding:10px 5px;">
+		<table class="easyui-datagrid" title="Topic订阅" 
+			data-options="
+				rownumbers: true,
+				singleSelect: true,
+				iconCls: 'icon-save',
+				url: 'JSONDATA/TOPIC.json',
+				method: 'get',
+				onLoadSuccess: onLoadSuccess,
+				rowStyler: function(index,row){
+					if (row.listprice < 30){
+						return 'background-color:#6293BB;color:#fff;font-weight:bold;';
+					}
+				}
+			">
+		<thead>
+			<tr>
+			    
+				<th data-options="field:'TopicINFO',width:100">Topic名称</th>
+				<th data-options="field:'TopicConsumer',width:100">Topic订阅者</th>
+				<th data-options="field:'TopicTime',width:100,align:'right'">订阅时间</th>
+				
+			</tr>
+		</thead>
+	</table>
+	</div>
+	<div title="RPC信息" iconCls="icon-reload" closable="true" style="padding:10px;">
+		<table class="easyui-datagrid" title="RPC发布信息" 
+			data-options="
+				rownumbers: true,
+				singleSelect: true,
+				iconCls: 'icon-save',
+				url: 'JSONDATA/RPC.json',
+				method: 'get',
+				onLoadSuccess: onLoadSuccess,
+				rowStyler: function(index,row){
+					if (row.listprice < 30){
+						return 'background-color:#6293BB;color:#fff;font-weight:bold;';
+					}
+				}
+			">
+		<thead>
+			<tr>
+				<th data-options="field:'RPCINFO',width:100">RPC名称</th>
+				<th data-options="field:'RPCTime',width:100">RPC发布时间</th>
+			
+			</tr>
+		</thead>
+	</table>
+	</div>
+     </div>
+	</div>
+	<!--endprint1-->
+	<div id="win" class="easyui-window" title="DataStrom帮助" style="padding:10px;width:230px;height:180px;" closed="true" collapsible="false"
+		minimizable="false"  maximizable="false">
+		<p> **** DataStrom框架 ****</p>
+         <li>版本 1.0</li>
+        <li>测试版本</li>
+		 <img src="/img/logo.jpg"  height="50" weight="50">
+	</div>
+	
+	<script type="text/javascript">
+		function onLoadSuccess(data){
+			var merges = [{
+				index: 2,
+				rowspan: 2
+			},{
+				index: 5,
+				rowspan: 2
+			},{
+				index: 7,
+				rowspan: 2
+			}];
+			for(var i=0; i<merges.length; i++){
+				$(this).datagrid('mergeCells',{
+					index: merges[i].index,
+					field: 'productid',
+					rowspan: merges[i].rowspan
+				});
+			}
+		}
+	</script>
+</body>
+</html>
