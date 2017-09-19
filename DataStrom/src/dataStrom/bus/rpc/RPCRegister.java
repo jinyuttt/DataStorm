@@ -23,17 +23,19 @@ public class RPCRegister {
   * RPC–≈œ¢
   * @param consumer
   */
-public synchronized void add(DataStromConsumer consumer)
+public synchronized boolean add(DataStromConsumer consumer)
 {
     if(consumer==null)
     {
-       return;
+       return false;
     }
    if(hash.add(consumer.address))
    {
        list.add(consumer);
        rpccount++;
+       return true;
    }
+return false;
   
 }
 

@@ -61,11 +61,28 @@ public class Ticket<REQ, RES> {
     public void read()
     {
   
+        try
+        {
         MQMessage msg=new MQMessage(client.read(),true);
         RES res=msgInvoker.convertResult(msg);
         if(res!=null)
-        queue.offer(res);
-
+            if(callback==null)
+            {
+               queue.offer(res);
+            }
+            else
+            {
+                callback.onReturn(res);
+            }
+        }
+        catch(java.lang.NullPointerException ex)
+        {
+           //在这边关闭很正常
+        }
+     catch(Exception ex)
+        {
+         ex.printStackTrace();
+        }
         
     }
     public RES take()

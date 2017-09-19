@@ -15,4 +15,5 @@ public interface MqAdmin {
     public String[] queryCustomer(String name);
     void  addCustomer(String name,DataStromConsumer customer);
     DataStromConsumer[]   queryClientCustomer(String name);
+    void readSingle();
 }

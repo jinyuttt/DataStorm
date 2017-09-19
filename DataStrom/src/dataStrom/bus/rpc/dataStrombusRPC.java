@@ -2,6 +2,9 @@
  * 
  */
 package dataStrom.bus.rpc;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,7 +15,9 @@ import dataStrom.bus.mq.MQCmd;
 import dataStrom.bus.mq.Message;
 import dataStrom.bus.mq.MqAdmin;
 import dataStrom.bus.mq.RPCCode;
+import dataStrom.bus.mq.RPCSingle;
 import dataStrom.bus.mq.Shared;
+import dataStrom.bus.net.udp.udpSession;
 
 /**
  * @author jinyu
@@ -39,6 +44,9 @@ public class dataStrombusRPC  implements MqAdmin{
  * 调用监视
  */
     private ConcurrentHashMap<String,MonitorRPC> hashMonitor=new ConcurrentHashMap<String,MonitorRPC>();
+    
+    RPCSingle single=new RPCSingle();
+    
     public dataStrombusRPC()
     {
     start();
@@ -176,7 +184,12 @@ public synchronized void addCustomer(String name, DataStromConsumer customer) {
         info=new RPCRegister();
         hashRPC.put(name, info);
     }
-    info.add(customer);
+    if(info.add(customer))
+    {
+        String info1=name+" "+customer.address;
+        //
+           single.write(info1);
+    }
 }
 
 /**
@@ -368,6 +381,7 @@ private synchronized void start()
             @Override
             public void run() {
                 try {
+                    readSingle();
                     TimeUnit.SECONDS.sleep(4);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
@@ -426,6 +440,44 @@ public DataStromConsumer[] queryClientCustomer(String name) {
        return list.getArrayConsumer();
     }
     return null;
+}
+
+@Override
+public void readSingle() {
+    String[] cs=  single.read();
+    if(cs==null)
+    {
+        return;
+    }
+
+      DatagramSocket srvsocket = null;
+      try {
+          srvsocket = new DatagramSocket();
+      } catch (SocketException e) {
+          e.printStackTrace();
+      }
+    for(int i=0;i<cs.length;i++)
+    {
+        String line="";
+        try
+        {
+         line=cs[i].substring(2);
+        String[] info=line.split(" ");
+        DataStromConsumer c=new DataStromConsumer();
+        c.mqname=info[0];
+        InetAddress host=InetAddress.getByName("127.0.0.1");
+        int port=Integer.valueOf("0");
+        c.session=new udpSession(srvsocket, host, port);
+        c.address=info[1];
+        //只有在非连接的网络才有效；
+       //连接的网络需要消费者重连接，所有直接创建udpSession发送
+        }
+        catch(Exception ex)
+        {
+            //log.warning("读取消费者失败："+line);
+        }
+    }
+    
 }
 
 }

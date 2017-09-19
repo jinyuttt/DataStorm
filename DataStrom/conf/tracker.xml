@@ -6,6 +6,7 @@
 	<hostList>127.0.0.1:6666</hostList> 
 	<netType>udp</netType>  
 	<verbose>true</verbose> 
+	<keepalive>UDP</keepalive> 
 </server> 
 
 </tracker>

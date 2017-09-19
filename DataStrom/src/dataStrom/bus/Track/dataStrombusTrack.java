@@ -309,4 +309,10 @@ public class dataStrombusTrack  implements MqAdmin{
           trackThread.start();
       }
   }
+
+@Override
+public void readSingle() {
+    // TODO Auto-generated method stub
+    
+}
 }

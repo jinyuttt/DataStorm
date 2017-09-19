@@ -91,6 +91,7 @@ public class DataStromCore {
         config.addressList= valueOf(xeval(xpath, doc, prefix, "hostList"), "0.0.0.0:6666");  
         config.netType=valueOf(xeval(xpath, doc, prefix, "netType"), "udp"); 
         TrackConfig.netJar=valueOf(xeval(xpath, doc, prefix, "netJar"), "net/net.jar"); 
+        TrackConfig.keepalive=valueOf(xeval(xpath, doc, prefix, "keepalive"), "UDP"); 
     }
     
     public static void loadFromXml(String xmlConfigSourceFile) throws Exception{ 

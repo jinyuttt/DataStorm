@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
@@ -64,7 +65,7 @@ public void addData(byte[]buf)
      */
     @Override
     public void handleWrite(Object socket) {
-   
+     this.srvsocket=(DatagramSocket) socket;
 
     }
 
@@ -194,6 +195,20 @@ public void addData(byte[]buf)
     @Override
     public byte[] handleReadData() {
     return data;
+    }
+    @Override
+    public void setRemote(String host, int port) {
+      try {
+        this.host=InetAddress.getByName(host);
+    } catch (UnknownHostException e) {
+        e.printStackTrace();
+    }
+      this.port=port;
+        
+    }
+    @Override
+    public int getRemotePort() {
+     return this.port;
     }
 
 }

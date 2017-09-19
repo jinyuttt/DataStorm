@@ -26,10 +26,13 @@ public interface Session extends Closeable {
     * @throws IOException  
     */  
    void handleWrite(Object socket) ;  
+   
 	String id(); 
+	
 	String getRemoteAddress();
 	
 	String getLocalAddress();
+	int getRemotePort();
 	
 	void write(Object msg);
 	
@@ -42,5 +45,8 @@ public interface Session extends Closeable {
 	<V> V attr(String key);
 	
 	<V> void attr(String key, V value);
-	  byte[] handleReadData() ;  
+	
+	 byte[] handleReadData() ;  
+	 
+	 public void setRemote(String host,int port);
 }

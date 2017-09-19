@@ -251,7 +251,23 @@ private void resetHost()
                                 //开启线程检查更新
                                 if(System.currentTimeMillis()-ackTime>20000)
                                 {
-                                    resetHost();
+                                    boolean issucess=true;
+                                    resetHost();//修订一次后要创建一次，防止失败没有切换（单节点）
+                                    for (String str : setName) {
+                                        msgcreate.setMQ(str);
+                                        msgcreate.setTopic(str);
+                                        rsp = proxyMonitor.invokeSync(msgcreate,20);
+                                        if(rsp==null)
+                                        {
+                                            issucess=false;
+                                            break;
+                                        }
+                                  }
+                                   if(!issucess)
+                                   {
+                                       continue;
+                                   }
+                                    
                                 }
                             } catch (IOException e) {
                               

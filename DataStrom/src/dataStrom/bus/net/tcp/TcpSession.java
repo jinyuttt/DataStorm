@@ -146,4 +146,16 @@ public class TcpSession implements Session{
         return null;
     }
 
+    @Override
+    public void setRemote(String host, int port) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public int getRemotePort() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
 }
