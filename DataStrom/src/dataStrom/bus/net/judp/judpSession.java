@@ -1,7 +1,7 @@
 /**
  * 
  */
-package dataStrom.bus.net.udp;
+package dataStrom.bus.net.judp;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -17,13 +17,13 @@ import dataStrom.bus.net.Session;
  * @author jinyu
  * 每一次数据
  */
-public class udpSession implements Session {
+public class judpSession implements Session {
 private DatagramSocket srvsocket=null;
 private InetAddress host;
 private int port;
 private byte[] data=null;
-private static final Logger log = Logger.getLogger(udpSession.class.getName());
-public udpSession(DatagramSocket socket,InetAddress addr,int cport)
+private static final Logger log = Logger.getLogger(judpSession.class.getName());
+public judpSession(DatagramSocket socket,InetAddress addr,int cport)
 {
     srvsocket=socket;
     this.host=addr;
